@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450306f056fd2d243a1dbbf898c42fb5, type: 3}
   m_Name: Fluted
   m_EditorClassIdentifier: Assembly-CSharp::BarrelData
-  slotType: 0
-  threadType: 0
-  magType: 0
-  name: 
+  slotType: 2
+  threadType: 1
+  magType: 1
+  name: Fluted Barrel
   barrelObject: {fileID: 0}

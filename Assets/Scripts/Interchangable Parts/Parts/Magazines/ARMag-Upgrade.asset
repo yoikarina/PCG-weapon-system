@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7028e0e51c67b5a43af3587a6c07ad54, type: 3}
   m_Name: ARMag-Upgrade
   m_EditorClassIdentifier: Assembly-CSharp::MagazineData
-  slotType: 0
-  threadType: 0
-  magType: 0
-  magSize: 0
+  slotType: 1
+  threadType: 1
+  magType: 1
+  name: AK Magazine+
+  magazineObject: {fileID: 0}
+  magSize: 42

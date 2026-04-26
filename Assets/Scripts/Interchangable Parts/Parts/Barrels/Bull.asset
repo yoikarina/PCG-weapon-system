@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bull
   m_EditorClassIdentifier: Assembly-CSharp::BarrelData
   slotType: 0
-  threadType: 0
-  magType: 0
-  name: 
+  threadType: 1
+  magType: 1
+  name: Bull Barrel
   barrelObject: {fileID: 0}

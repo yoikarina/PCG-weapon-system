@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Silencer
   m_EditorClassIdentifier: Assembly-CSharp::MuzzleData
   slotType: 0
-  threadType: 0
-  magType: 0
+  threadType: 1
+  magType: 1
+  name: Silencer
   muzzleObject: {fileID: 0}

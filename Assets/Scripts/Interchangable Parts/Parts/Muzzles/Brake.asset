@@ -15,4 +15,5 @@ MonoBehaviour:
   slotType: 0
   threadType: 0
   magType: 0
+  name: Muzzle Brake
   muzzleObject: {fileID: 0}

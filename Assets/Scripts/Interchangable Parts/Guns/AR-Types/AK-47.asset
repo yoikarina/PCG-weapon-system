@@ -12,5 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32768c3ae768c5c4d89433f6a7080acc, type: 3}
   m_Name: AK-47
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  name: 
-  slots: []
+  name: AK-47
+  slots:
+  - slotType: 1
+    allowedThreads: 01000000
+    allowedMags: 01000000
+  - slotType: 0
+    allowedThreads: 01000000
+    allowedMags: 
+  - slotType: 2
+    allowedThreads: 01000000
+    allowedMags: 
