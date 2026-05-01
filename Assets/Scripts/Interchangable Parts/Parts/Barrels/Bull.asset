@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450306f056fd2d243a1dbbf898c42fb5, type: 3}
   m_Name: Bull
   m_EditorClassIdentifier: Assembly-CSharp::BarrelData
-  slotType: 0
+  slotType: 2
   threadType: 1
   magType: 1
   name: Bull Barrel
-  barrelObject: {fileID: 0}
+  barrelObject: {fileID: 285322430150227867, guid: 8fae8e3334a276c48824a84840ed11d9, type: 3}

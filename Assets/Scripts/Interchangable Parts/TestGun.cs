@@ -7,10 +7,14 @@ public class TestGun : MonoBehaviour
     public WeaponData weapon;
     public List<EquippedPart> equippedParts;
 
+    public UIStats stats;
+
     public void CurrentMagazineSize()
     {
         var equip = equippedParts.Find(equip => equip.slotType == SlotType.Magazine);
         var mag = equip?.part as MagazineData;
+
+        stats.UIAmmo(mag.magSize, mag.magSize);
 
         if (mag != null)
             Debug.Log("Magazine Size: " + mag.magSize);

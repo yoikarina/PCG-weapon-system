@@ -16,4 +16,4 @@ MonoBehaviour:
   threadType: 1
   magType: 1
   name: Silencer
-  muzzleObject: {fileID: 0}
+  muzzleObject: {fileID: 6755304756938455926, guid: 344a6a799d8af8043b81da283ae55e78, type: 3}

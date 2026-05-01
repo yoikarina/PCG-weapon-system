@@ -15,10 +15,10 @@ MonoBehaviour:
   name: AK-47
   slots:
   - slotType: 1
-    allowedThreads: 01000000
-    allowedMags: 01000000
+    allowedThreads: 010000000200000003000000
+    allowedMags: 0100000001000000
   - slotType: 0
-    allowedThreads: 01000000
+    allowedThreads: 0100000001000000
     allowedMags: 
   - slotType: 2
     allowedThreads: 01000000

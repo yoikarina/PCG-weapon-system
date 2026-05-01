@@ -16,5 +16,5 @@ MonoBehaviour:
   threadType: 1
   magType: 1
   name: AK Magazine
-  magazineObject: {fileID: 0}
-  magSize: 0
+  magazineObject: {fileID: 6482548023505336641, guid: 63d4993f86d35a04bb973b9eb2c15127, type: 3}
+  magSize: 30
