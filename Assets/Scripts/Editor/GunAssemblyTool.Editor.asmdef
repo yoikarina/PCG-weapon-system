@@ -1,0 +1,16 @@
+{
+    "name": "GunAssemblyTool.Editor",
+    "rootNamespace": "GunAssemblyTool.Editor",
+    "references": [
+        "GunAssemblyTool.Runtime"
+    ],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

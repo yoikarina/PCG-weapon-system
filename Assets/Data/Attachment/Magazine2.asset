@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 235d18efd3a157a4b953ed02d8396fcb, type: 3}
+  m_Name: Magazine2
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.AttachmentData
+  attachmentId: Magazine2
+  attachType: 0
+  requiredTags:
+  - shotgun
+  forbiddenTags: []
+  damageBonus: 0
+  fireRateBonus: 0
+  accuracyBonus: 0
+  reloadTimeBonus: 0
+  spawnWeight: 10
+  attachmentPrefab: {fileID: 9166735039851505653, guid: 406744637768d594f94f3975ceb9079c, type: 3}
