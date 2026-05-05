@@ -17,3 +17,4 @@ MonoBehaviour:
   magType: 1
   name: Bull Barrel
   barrelObject: {fileID: 285322430150227867, guid: 8fae8e3334a276c48824a84840ed11d9, type: 3}
+  buffHP: 5

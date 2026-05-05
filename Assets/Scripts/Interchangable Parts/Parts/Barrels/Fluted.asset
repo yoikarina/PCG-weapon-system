@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Fluted
   m_EditorClassIdentifier: Assembly-CSharp::BarrelData
   slotType: 2
-  threadType: 1
+  threadType: 3
   magType: 1
   name: Fluted Barrel
   barrelObject: {fileID: 0}
+  buffHP: 0

@@ -5,4 +5,5 @@ public class BarrelData : PartData
 {
     public string name;
     public GameObject barrelObject;
+    public int buffHP;
 }
