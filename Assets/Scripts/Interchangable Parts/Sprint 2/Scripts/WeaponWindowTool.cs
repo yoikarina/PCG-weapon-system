@@ -667,6 +667,9 @@ public class WeaponWindowTool : EditorWindow
             }
         }
 
+        GunData runtime = equipAssemblyRoot.AddComponent<GunData>();
+        runtime.Initialize(equipLoadout);
+
         Selection.activeGameObject = equipAssemblyRoot;
         if (SceneView.lastActiveSceneView != null) SceneView.lastActiveSceneView.FrameSelected();
     }

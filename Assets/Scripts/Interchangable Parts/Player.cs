@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public UIStats stats;
     //public TestGun equippedGun;
 
-    //public WeaponRuntime currentGun;
+    public GunData currentGun;
 
     private void OnEnable()
     {
@@ -32,7 +32,8 @@ public class Player : MonoBehaviour
     {
         if (context.performed) {
             //currentGun.Reload();
-            //currentGun.SwapGun();
+            currentGun.SwapGun();
+            CheckData();
         }
     }
 
@@ -62,11 +63,11 @@ public class Player : MonoBehaviour
 
     public void CheckData()
     {
-        //current = currentGun.magSize;
+        current = currentGun.magSize;
 
         // UI ammunition counter
-        //stats.UIMaxAmmo(currentGun.magSize);
-        //stats.UIAmmo(currentGun.magSize);
+        stats.UIMaxAmmo(currentGun.magSize);
+        stats.UIAmmo(currentGun.magSize);
 
         // Player buff/debuffs
         BuffAttributes();
@@ -85,7 +86,8 @@ public class Player : MonoBehaviour
     public void BuffAttributes(/*int hitPointValue*/)
     {
         currentHitPoints = baseHitPoints;
-        //currentHitPoints += currentGun.hitPoints;
+        currentHitPoints += currentGun.hitPoints;
+        Debug.Log(currentHitPoints);
         stats.UIHealthPoints(currentHitPoints);
     }
 
