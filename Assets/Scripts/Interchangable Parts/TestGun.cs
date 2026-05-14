@@ -1,5 +1,6 @@
 using GunSystem;
 using System.Collections.Generic;
+using Unity.Android.Gradle.Manifest;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +30,9 @@ public class TestGun : MonoBehaviour
     }
 
     bool compatibility = true;
+    private MagazineData selectedMagazine;
+    //private ReceiverData receiver;
+
     public void EquipPart()
     {
         if (compatibility) {
@@ -59,7 +63,7 @@ public class TestGun : MonoBehaviour
         stats.UIAmmo(mag.magSize);
 
         // Player buff/debuffs
-        player.BuffAttributes(barrel.buffHP);
+       // player.BuffAttributes(barrel.buffHP);
         player.DebuffAttributes();
 
         // Gun attribute buff/debuffs
@@ -91,7 +95,17 @@ public class TestGun : MonoBehaviour
         compatibility = true;
         stats.ColorChecker(compatibility);
 
-        foreach (var slot in weapon.slots) {
+        MagazineData mag = selectedMagazine as MagazineData;
+
+        /*if (mag.weaponData == receiver.weaponData) {
+            if (receiver.weaponData.allowedMagazines.Contains(mag.magazineCategory)) {
+                // equip allowed
+                Debug.Log("Test");
+            }
+        }
+
+
+       /* foreach (var slot in weapon.slots) {
             var equipped = equippedParts.Find(equip => equip.slotType == slot.slotType);
 
             if (equipped == null || equipped.part == null) {
@@ -108,7 +122,7 @@ public class TestGun : MonoBehaviour
                 compatibility = false;
                 stats.ColorChecker(compatibility);
             }
-        }
+        }*/
         Debug.Log("Every slot is valid?: " + allCompatible);
     }
 }

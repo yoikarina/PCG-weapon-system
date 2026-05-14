@@ -10,7 +10,9 @@ public class Player : MonoBehaviour
     public int baseHitPoints = 10;
 
     public UIStats stats;
-    public TestGun equippedGun;
+    //public TestGun equippedGun;
+
+    //public WeaponRuntime currentGun;
 
     private void OnEnable()
     {
@@ -29,26 +31,61 @@ public class Player : MonoBehaviour
     public void Reloading(InputAction.CallbackContext context)
     {
         if (context.performed) {
-            equippedGun.Reload();
+            //currentGun.Reload();
+            //currentGun.SwapGun();
         }
     }
 
     public void Shooting(InputAction.CallbackContext context)
     {
         if (context.performed) {
-            equippedGun.Shoot();
+            Shoot();
         }
+    }
+
+    int current;
+    bool reload = false;
+
+    public void Shoot()
+    {
+        current--;
+        if (current == 0) {
+            reload = true;
+        }
+
+        if (reload && current < 0) {
+            CheckData();
+            reload = false;
+        }
+        stats.UIAmmo(current);
+    }
+
+    public void CheckData()
+    {
+        //current = currentGun.magSize;
+
+        // UI ammunition counter
+        //stats.UIMaxAmmo(currentGun.magSize);
+        //stats.UIAmmo(currentGun.magSize);
+
+        // Player buff/debuffs
+        BuffAttributes();
+        DebuffAttributes();
+
+        // Gun attribute buff/debuffs
+
     }
 
     void Start()
     {
         stats.UIHealthPoints(baseHitPoints);
+        CheckData();      
     }
 
-    public void BuffAttributes(int hitPointValue)
+    public void BuffAttributes(/*int hitPointValue*/)
     {
         currentHitPoints = baseHitPoints;
-        currentHitPoints += hitPointValue;
+        //currentHitPoints += currentGun.hitPoints;
         stats.UIHealthPoints(currentHitPoints);
     }
 

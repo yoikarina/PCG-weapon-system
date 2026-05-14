@@ -4,5 +4,5 @@ using UnityEngine;
 public class MuzzleData : PartData
 {
     public string name;
-    public GameObject muzzleObject;
+    //public GameObject muzzleObject;
 }
