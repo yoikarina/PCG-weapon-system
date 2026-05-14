@@ -638,6 +638,14 @@ public class WeaponWindowTool : EditorWindow
         for (int i = 1; i <= 4; i++) {
             if (equipLoadout[i] != null) {
 
+                bool result = CompatibilityTest.Compatible(equipLoadout[0], equipLoadout[i]);
+
+                if (!result) {
+                    Debug.Log("Part cannot fit the weapon or the receiver is not selected");
+                    equipLoadout[i] = null;
+                    continue;
+                }
+
                 GameObject accInstance = (GameObject)PrefabUtility.InstantiatePrefab(equipLoadout[i].partObject);
 
                 if (bodyInstance != null) {
