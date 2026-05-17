@@ -44,26 +44,16 @@ public class Player : MonoBehaviour
         }
     }
 
-    int current;
-    bool reload = false;
+    //int thisWeapon;
 
     public void Shoot()
-    {
-        current--;
-        if (current == 0) {
-            reload = true;
-        }
-
-        if (reload && current < 0) {
-            CheckData();
-            reload = false;
-        }
-        stats.UIAmmo(current);
+    {        
+        currentGun.CurrentAmmo();
     }
 
     public void CheckData()
     {
-        current = currentGun.magSize;
+        //thisWeapon = currentGun.magSize;
 
         // UI ammunition counter
         stats.UIMaxAmmo(currentGun.magSize);

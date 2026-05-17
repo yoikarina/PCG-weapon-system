@@ -16,7 +16,7 @@ MonoBehaviour:
   threadType: 1
   magType: 1
   partObject: {fileID: 4712502318906787044, guid: b377ccba7577db54ebc6b164091bf9b7, type: 3}
-  weaponData: {fileID: 11400000, guid: 3edd8ff82ab53cc48ba55b7d74847758, type: 2}
+  weaponData: {fileID: 11400000, guid: 6fe8e90e5839e9b468c5ec95a2748d85, type: 2}
   name: upgrade
   magSize: 42
   magazineCategory: 1

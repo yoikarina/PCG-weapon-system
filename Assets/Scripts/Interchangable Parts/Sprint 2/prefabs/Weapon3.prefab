@@ -50,6 +50,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d29abdbdbef1a46498e49ada11ae6fff, type: 2}
   magSize: 30
   hitPoints: 25
+  stats: {fileID: 0}
+  currentAmmo: 30
 --- !u!1001 &8205546388262933833
 PrefabInstance:
   m_ObjectHideFlags: 0

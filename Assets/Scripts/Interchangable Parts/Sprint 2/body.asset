@@ -16,6 +16,6 @@ MonoBehaviour:
   threadType: 0
   magType: 0
   partObject: {fileID: 2648618368381968351, guid: da7b4cb5db0ffe24aa59566ac9dbcdb8, type: 3}
-  weaponData: {fileID: 11400000, guid: 3edd8ff82ab53cc48ba55b7d74847758, type: 2}
+  weaponData: {fileID: 11400000, guid: 6fe8e90e5839e9b468c5ec95a2748d85, type: 2}
   name: 
   buffHP: 50

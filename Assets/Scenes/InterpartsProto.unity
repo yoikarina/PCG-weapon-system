@@ -1389,7 +1389,7 @@ MonoBehaviour:
   currentHitPoints: 10
   baseHitPoints: 10
   stats: {fileID: 974681242}
-  currentGun: {fileID: 5203524304016948742, guid: e82513d62558d2f4ab50e011f422ba43, type: 3}
+  currentGun: {fileID: 664933527458102953, guid: 66f0f932b3b65934ea45c6e242591f56, type: 3}
 --- !u!4 &1282054403
 Transform:
   m_ObjectHideFlags: 0

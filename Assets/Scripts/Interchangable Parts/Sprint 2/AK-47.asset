@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32768c3ae768c5c4d89433f6a7080acc, type: 3}
   m_Name: AK-47
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  weaponName: 
-  allowedMagazines: 
+  weaponName: AK-47
+  allowedMagazines: 0100000002000000
   supportedOptics: 
   supportsSuppressors: 0
