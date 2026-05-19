@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
@@ -7,12 +8,16 @@ public class GunData : MonoBehaviour
 {
     public List<PartData> equippedParts = new();
 
+    [Header("Stats")]
     public int magSize;
     public int hitPoints;
 
-    //public int gunCurrentMag;
+    [Header("Current count ammo")]
+    public int currentAmmo;
+    public int swappedAmmo; // When swapped forces gun to continue from this value
 
-    public UIStats stats;
+    private bool reload = false;
+    private bool gunSwapped = false;
 
     public void Initialize(PartData[] part)
     {
@@ -27,7 +32,6 @@ public class GunData : MonoBehaviour
 
     public void Start()
     {
-        stats = GetComponent<UIStats>();
         SetAmmo();
     }
 
@@ -51,23 +55,16 @@ public class GunData : MonoBehaviour
 
             if (part is BarrelData bar) {
                 hitPoints = bar.buffHP;
-            }
-
-            
+            } 
         }
-
-        SetAmmo();
     }
     public void SwapGun()
     {
         gunSwapped = true;
         swappedAmmo = currentAmmo;
-        BuildStats();     
+        BuildStats();
+        SetAmmo();
     }
-    public int currentAmmo;
-    public int swappedAmmo;
-    bool reload = false;
-    bool gunSwapped = false;
 
     public void CurrentAmmo()
     {
@@ -82,11 +79,14 @@ public class GunData : MonoBehaviour
         }
 
         if (reload && currentAmmo < 0) {
-            currentAmmo = magSize;
+            SetAmmo();
             reload = false;
         }
+    }
 
-        //stats.UIAmmo(gunCurrentMag);
+    public void Reload()
+    {
+        SetAmmo();
     }
 
     public void SetAmmo()

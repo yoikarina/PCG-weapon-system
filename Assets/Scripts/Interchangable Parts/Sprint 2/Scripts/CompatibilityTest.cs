@@ -7,16 +7,17 @@ public class CompatibilityTest : MonoBehaviour
         if (receiver == null || part == null) 
             return false;
 
-        if (receiver.weaponData == null)
+        if (receiver is not ReceiverData receiverData)
             return false;
 
-        WeaponData weaponData = receiver.weaponData;
+        if (part is not Attachments attachmentData)
+            return false;
 
-        if (part.weaponData != weaponData) 
+        if (!attachmentData.weaponDatas.Contains(receiverData.weaponData))
             return false;
 
         if (part is MagazineData mag) {
-            if (!weaponData.allowedMagazines.Contains(mag.magazineCategory))
+            if (!receiverData.weaponData.allowedMagazines.Contains(mag.magazineCategory))
                 return false;
         }
 

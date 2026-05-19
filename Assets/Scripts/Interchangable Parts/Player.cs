@@ -9,9 +9,9 @@ public class Player : MonoBehaviour
     public int currentHitPoints = 10;
     public int baseHitPoints = 10;
 
-    public UIStats stats;
-    //public TestGun equippedGun;
+    private bool firstGunInitialized = false;
 
+    public UIStats stats;
     public GunData currentGun;
 
     private void OnEnable()
@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
         playerControls.actions.Enable();
         playerControls.actions["Shoot"].performed += Shooting;
         playerControls.actions["Reload"].performed += Reloading;
+        playerControls.actions["SwapGun"].performed += Swapping;
     }
 
     private void OnDisable()
@@ -26,13 +27,21 @@ public class Player : MonoBehaviour
         playerControls.actions.Disable();
         playerControls.actions["Shoot"].performed -= Shooting;
         playerControls.actions["Reload"].performed -= Reloading;
+        playerControls.actions["SwapGun"].performed -= Swapping;
     }
 
     public void Reloading(InputAction.CallbackContext context)
     {
         if (context.performed) {
-            //currentGun.Reload();
-            currentGun.SwapGun();
+            currentGun.Reload();
+            stats.UIAmmo(currentGun.currentAmmo);
+        }
+    }
+
+    public void Swapping(InputAction.CallbackContext context)
+    {
+        if (context.performed) {
+            currentGun.SwapGun();          
             CheckData();
         }
     }
@@ -49,16 +58,19 @@ public class Player : MonoBehaviour
     public void Shoot()
     {        
         currentGun.CurrentAmmo();
+        stats.UIAmmo(currentGun.currentAmmo);
     }
 
     public void CheckData()
     {
-        //thisWeapon = currentGun.magSize;
-
         // UI ammunition counter
         stats.UIMaxAmmo(currentGun.magSize);
-        stats.UIAmmo(currentGun.magSize);
-
+        stats.UIAmmo(currentGun.swappedAmmo);
+        if (firstGunInitialized) {
+            stats.UIAmmo(currentGun.magSize);
+            firstGunInitialized = false;       
+        }
+        
         // Player buff/debuffs
         BuffAttributes();
         DebuffAttributes();
@@ -70,14 +82,14 @@ public class Player : MonoBehaviour
     void Start()
     {
         stats.UIHealthPoints(baseHitPoints);
+        firstGunInitialized = true;
         CheckData();      
     }
 
-    public void BuffAttributes(/*int hitPointValue*/)
+    public void BuffAttributes()
     {
         currentHitPoints = baseHitPoints;
         currentHitPoints += currentGun.hitPoints;
-        Debug.Log(currentHitPoints);
         stats.UIHealthPoints(currentHitPoints);
     }
 

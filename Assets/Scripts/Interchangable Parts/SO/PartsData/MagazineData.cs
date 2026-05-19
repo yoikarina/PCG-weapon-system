@@ -1,7 +1,7 @@
 using GunSystem;
 using UnityEngine;
 [CreateAssetMenu(menuName = "Gun/Parts/Magazine")]
-public class MagazineData : PartData
+public class MagazineData : Attachments
 {
     public string name;
     //public GameObject magazineObject;
