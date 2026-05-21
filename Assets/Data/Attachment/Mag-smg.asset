@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 465ccb8b46c74ef48b24478e72cd244d, type: 3}
+  m_Name: Mag-smg
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.MagazineData
+  attachmentId: MagSmg
+  attachType: 0
+  threadType: 0
+  magType: 0
+  requiredTags:
+  - smg
+  forbiddenTags: []
+  damageBonus: 0
+  fireRateBonus: 0
+  accuracyBonus: 0
+  reloadTimeBonus: 0
+  spawnWeight: 10
+  attachmentPrefab: {fileID: 2140899377759354101, guid: b05dcbe6f5ad6644a8ab72cbdf0d0ae7, type: 3}
+  magSize: 30

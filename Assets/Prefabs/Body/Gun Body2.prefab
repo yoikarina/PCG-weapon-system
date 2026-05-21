@@ -1,5 +1,53 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &616330508603887129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1442020060563318832}
+  - component: {fileID: 1743210268158317461}
+  m_Layer: 0
+  m_Name: Socket_Stock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1442020060563318832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 616330508603887129}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6986622778949312628}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1743210268158317461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 616330508603887129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1fb5e4d41b02e4b816190905293834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAttachmentPoint
+  slotType: 3
+  localPositionOffset: {x: 0, y: 0, z: 0}
+  localRotationOffset: {x: 0, y: 0, z: 0}
+  currentAttachmentInstance: {fileID: 0}
 --- !u!1 &3128738183016305404
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,6 +171,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6986622778949312628}
+  - component: {fileID: 9118904533430422422}
   m_Layer: 0
   m_Name: Gun Body2
   m_TagString: Untagged
@@ -146,8 +195,32 @@ Transform:
   - {fileID: 2390394339282446937}
   - {fileID: 3647409846813150025}
   - {fileID: 8354177151379940}
+  - {fileID: 1442020060563318832}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9118904533430422422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4494728141878595394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692e148b86174264e8fb10e44e276d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAssemblyController
+  registry: {fileID: 11400000, guid: 9b294fe0955cec44b923f2d6b461f104, type: 2}
+  initialBody: {fileID: 11400000, guid: ae3c31185d4cdf948a0c32b13323aeba, type: 2}
+  onAssemblyChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onValidationFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onHpBonusChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7499255630253469758
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,6 +261,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2390394339282446937}
+  - component: {fileID: 625040078321441535}
   m_Layer: 0
   m_Name: Socket_Magazine
   m_TagString: Untagged
@@ -210,3 +284,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6986622778949312628}
   m_LocalEulerAnglesHint: {x: -16.77, y: 0, z: 0}
+--- !u!114 &625040078321441535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299229915243430373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1fb5e4d41b02e4b816190905293834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAttachmentPoint
+  slotType: 0
+  localPositionOffset: {x: 0, y: 0, z: 0}
+  localRotationOffset: {x: 0, y: 0, z: 0}
+  currentAttachmentInstance: {fileID: 0}

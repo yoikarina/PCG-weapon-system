@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e61891ad59d4b646a9e20a2189f47fc, type: 3}
+  m_Script: {fileID: 11500000, guid: fbbb5cc0e35569a42ade31c44abbca7a, type: 3}
   m_Name: AttachmentRegistry
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.AttachmentRegistry
   allAttachments:
-  - {fileID: 11400000, guid: 7a38a0e7008e156429cc07a18a91b4d9, type: 2}
-  - {fileID: 11400000, guid: a41bb1ad081aa924481183f075888019, type: 2}
-  - {fileID: 11400000, guid: de2b40bec9bee18438f1d16c639804af, type: 2}
-  - {fileID: 11400000, guid: cae3955091652dc4a912be227ec6802d, type: 2}
+  - {fileID: 11400000, guid: 2174de2961da1ac4ea81fbc6f92c9cf2, type: 2}
+  - {fileID: 11400000, guid: f68385bc01a6b1f48bc42d0511a04500, type: 2}
+  - {fileID: 11400000, guid: f549d883150e32b46b6973302bc57186, type: 2}
+  - {fileID: 11400000, guid: a24df0890660c074794faf2f4e6718e1, type: 2}

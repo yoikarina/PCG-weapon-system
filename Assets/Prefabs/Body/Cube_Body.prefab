@@ -152,6 +152,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1673324667326177375}
+  - component: {fileID: 2428634471476747532}
   m_Layer: 0
   m_Name: Socket_Stock
   m_TagString: Untagged
@@ -174,6 +175,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 72209447402221020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2428634471476747532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7166664191423982628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1fb5e4d41b02e4b816190905293834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAttachmentPoint
+  slotType: 3
+  localPositionOffset: {x: 0, y: 0, z: 0}
+  localRotationOffset: {x: 0, y: 0, z: 0}
+  currentAttachmentInstance: {fileID: 0}
 --- !u!1 &7410526254328545339
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,6 +200,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6489445184256481628}
+  - component: {fileID: 7015077572865019078}
   m_Layer: 0
   m_Name: Socket_Magazine
   m_TagString: Untagged
@@ -205,6 +223,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 72209447402221020}
   m_LocalEulerAnglesHint: {x: -16.77, y: 0, z: 0}
+--- !u!114 &7015077572865019078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7410526254328545339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1fb5e4d41b02e4b816190905293834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAttachmentPoint
+  slotType: 0
+  localPositionOffset: {x: 0, y: 0, z: 0}
+  localRotationOffset: {x: 0, y: 0, z: 0}
+  currentAttachmentInstance: {fileID: 0}
 --- !u!1 &7725883066137650866
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,6 +248,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 72209447402221020}
+  - component: {fileID: 5185359767498404088}
   m_Layer: 0
   m_Name: Cube_Body
   m_TagString: Untagged
@@ -241,6 +276,29 @@ Transform:
   - {fileID: 1673324667326177375}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5185359767498404088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7725883066137650866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692e148b86174264e8fb10e44e276d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAssemblyController
+  registry: {fileID: 11400000, guid: 9b294fe0955cec44b923f2d6b461f104, type: 2}
+  initialBody: {fileID: 11400000, guid: dfe4c49408148c64cb513f242696e320, type: 2}
+  onAssemblyChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onValidationFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onHpBonusChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8875702578902948279
 GameObject:
   m_ObjectHideFlags: 0
