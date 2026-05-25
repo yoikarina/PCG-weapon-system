@@ -15,10 +15,9 @@ MonoBehaviour:
   attachmentId: default_muzzle
   displayName: Default_Muzzle
   attachType: 2
-  requiredTags: []
-  forbiddenTags: []
+  requiredTags:
+  - shotgun
+  forbiddenTags:
+  - bullpup
   stats: []
-  spawnWeight: 10
   attachmentPrefab: {fileID: 40420896432465170, guid: 9f35cc3cb6e9e4340ac38371436a711e, type: 3}
-  isSuppressor: 0
-  noiseReduction: 0

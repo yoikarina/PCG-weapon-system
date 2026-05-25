@@ -15,10 +15,7 @@ MonoBehaviour:
   attachmentId: default_magazine
   displayName: Default_Magazine
   attachType: 0
-  requiredTags:
-  - sniper
-  forbiddenTags:
-  - pistol
+  requiredTags: []
+  forbiddenTags: []
   stats: []
-  spawnWeight: 10
   attachmentPrefab: {fileID: 4712502318906787044, guid: 79ce84f4cc684864aad45416ba0a0593, type: 3}

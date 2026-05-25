@@ -10,18 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19ed381f21adf354f92063e78d134519, type: 3}
-  m_Name: Default_Body_Body
+  m_Name: AR_N 1_Body
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunBodyData
-  bodyId: default_body
-  displayName: Default_Body
-  bodyPrefab: {fileID: 2648618368381968351, guid: 69748d4a0f985ca4180437c980563254, type: 3}
-  partObject: {fileID: 2648618368381968351, guid: 69748d4a0f985ca4180437c980563254, type: 3}
-  tags:
-  - pistol
-  - smg
-  - bullpup
+  bodyId: ar_n_1
+  displayName: AR_N 1
+  bodyPrefab: {fileID: 3205656361919459485, guid: 55893bc9cd3bb574ab188b9d7bd82673, type: 3}
+  partObject: {fileID: 3205656361919459485, guid: 55893bc9cd3bb574ab188b9d7bd82673, type: 3}
+  tags: []
   slots:
   - slotType: 0
+  - slotType: 1
   - slotType: 2
   - slotType: 3
   - slotType: 4

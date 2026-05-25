@@ -18,5 +18,4 @@ MonoBehaviour:
   requiredTags: []
   forbiddenTags: []
   stats: []
-  spawnWeight: 10
   attachmentPrefab: {fileID: 6087258115003699621, guid: a171d890653f4d34486bcb9db17df1f8, type: 3}

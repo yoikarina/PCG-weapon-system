@@ -2,65 +2,72 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GunAssemblyTool
 {
     public static class CompatibilityResolver
     {
-        // ── Compatibility ─────────────────────────────────────────────────────
-
-        // Returns true only when all three steps pass.
-        // Step 1 — Required tags: body must carry every tag in attachment.requiredTags.
-        // Step 2 — Forbidden tags: body must carry none of attachment.forbiddenTags.
-        // Step 3 — Slot support: body must expose a slot of attachment.attachType.
+        // Compatibility check — three steps:
+        // Step 1 — Required tags (OR): gun body must have AT LEAST ONE required tag.
+        //           If requiredTags is empty, any gun body passes this step.
+        // Step 2 — Forbidden tags: gun body must have NONE of the forbidden tags.
+        // Step 3 — Slot support: gun body must expose a slot of attachment.attachType.
         public static bool IsCompatible(GunBodyData body, AttachmentData attachment)
         {
             if (body == null || attachment == null) return false;
 
-            foreach (var req in attachment.RequiredTagSet)
-                if (!body.HasTag(req)) return false;
+            // Step 1: OR logic — compatibility rules:
+            //   Both empty  → default on both sides → always compatible
+            //   Body empty, attachment has tags → body is default → compatible
+            //   Body has tags, attachment empty  → attachment is default → compatible
+            //   Both have tags → body must have at least one attachment tag (OR)
+            if (attachment.RequiredTagSet.Count > 0 && body.tags.Count > 0)
+            {
+                bool anyMatch = attachment.RequiredTagSet.Any(req => body.HasTag(req));
+                if (!anyMatch) return false;
+            }
 
+            // Step 2: body must have none of the forbidden tags
             foreach (var forb in attachment.ForbiddenTagSet)
                 if (body.HasTag(forb)) return false;
 
+            // Step 3: slot must be supported
             if (body.GetSlot(attachment.attachType) == null) return false;
 
             return true;
         }
 
         // Returns a human-readable reason why the attachment is incompatible.
-        // Returns empty string when compatible.
+        // Returns the first reason why IsCompatible returned false.
+        // Mirrors IsCompatible step-by-step so the reason matches exactly.
         public static string GetIncompatibleReason(GunBodyData body, AttachmentData attachment)
         {
             if (body == null || attachment == null) return "Missing data";
 
-            var sb = new StringBuilder();
+            // Step 1: required tags (OR) — same condition as IsCompatible
+            if (attachment.RequiredTagSet.Count > 0 && body.tags.Count > 0)
+            {
+                bool anyMatch = attachment.RequiredTagSet.Any(req => body.HasTag(req));
+                if (!anyMatch)
+                    return $"Body has none of the required tags: [{string.Join(", ", attachment.RequiredTagSet)}]";
+            }
 
-            var missing = new List<string>();
-            foreach (var req in attachment.RequiredTagSet)
-                if (!body.HasTag(req)) missing.Add(req);
-            if (missing.Count > 0)
-                sb.AppendLine($"Missing tags: {string.Join(", ", missing)}");
-
-            var blocked = new List<string>();
-            foreach (var forb in attachment.ForbiddenTagSet)
-                if (body.HasTag(forb)) blocked.Add(forb);
+            // Step 2: forbidden tags
+            var blocked = attachment.ForbiddenTagSet.Where(body.HasTag).ToList();
             if (blocked.Count > 0)
-                sb.AppendLine($"Blocked by tags: {string.Join(", ", blocked)}");
+                return $"Body has forbidden tag(s): {string.Join(", ", blocked)}";
 
+            // Step 3: slot
             if (body.GetSlot(attachment.attachType) == null)
-                sb.AppendLine($"Slot not supported: {attachment.attachType}");
+                return $"Slot not supported on this gun body: {attachment.attachType}";
 
-            return sb.ToString().TrimEnd();
+            return "";
         }
 
-        // ── Stats ─────────────────────────────────────────────────────────────
-
-        // Builds final GunStats from the body's base stat list, then stacks
-        // each equipped attachment's stat bonuses on top.
-        // MagSize is treated as an override (last equipped magazine wins),
-        // all other stats are additive.
+        // Stacks attachment stat bonuses on top of the body's base stats.
+        // MagSize overrides instead of adding; all other stats are additive.
         public static GunStats ComputeStats(GunBodyData body, IEnumerable<AttachmentData> equipped)
         {
             if (body == null) return default;
@@ -79,7 +86,6 @@ namespace GunAssemblyTool
             foreach (var a in equipped)
             {
                 if (a == null) continue;
-
                 foreach (var entry in a.stats)
                 {
                     switch (entry.key)
@@ -89,12 +95,9 @@ namespace GunAssemblyTool
                         case StatKeys.Accuracy: stats.accuracy += entry.value; break;
                         case StatKeys.ReloadTime: stats.reloadTime += entry.value; break;
                         case StatKeys.FireRange: stats.fireRange += entry.value; break;
-                        case StatKeys.MagSize:
-                            stats.ammoCapacity = (int)entry.value;
-                            break;
+                        case StatKeys.MagSize: stats.ammoCapacity = (int)entry.value; break;
                         default:
-                            if (!stats.custom.ContainsKey(entry.key))
-                                stats.custom[entry.key] = 0f;
+                            if (!stats.custom.ContainsKey(entry.key)) stats.custom[entry.key] = 0f;
                             stats.custom[entry.key] += entry.value;
                             break;
                     }
@@ -111,7 +114,6 @@ namespace GunAssemblyTool
             return stats;
         }
 
-        // Returns the total HP bonus from all equipped BarrelData attachments.
         public static int ComputeBarrelHpBonus(IEnumerable<AttachmentData> equipped)
         {
             int total = 0;
@@ -120,22 +122,18 @@ namespace GunAssemblyTool
             return total;
         }
 
-        // Builds a custom stat dictionary from all non-preset entries in a stat list.
         private static Dictionary<string, float> BuildCustomStats(List<StatEntry> entries)
         {
             var result = new Dictionary<string, float>();
             foreach (var e in entries)
             {
-                bool isPreset = System.Array.IndexOf(StatKeys.Presets, e.key) >= 0;
+                bool isPreset = Array.IndexOf(StatKeys.Presets, e.key) >= 0;
                 if (!isPreset) result[e.key] = e.value;
             }
             return result;
         }
     }
 
-    // ── GunStats ──────────────────────────────────────────────────────────────
-
-    // Final computed stats for one gun + attachment configuration.
     [Serializable]
     public struct GunStats
     {
