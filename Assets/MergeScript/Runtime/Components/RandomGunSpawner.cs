@@ -7,11 +7,13 @@ using UnityEngine;
 
 namespace GunAssemblyTool
 {
+    // Attach this to an empty parent GameObject in the scene — NOT on the gun prefab itself.
+    // On Start it spawns one gun immediately; each left mouse click replaces it with a new one.
     public class RandomGunSpawner : MonoBehaviour
     {
         [Header("Data Source")]
         public AttachmentRegistry registry;
-        public List<GunBodyData> allBodies = new List<GunBodyData>();
+        public List<GunBodyData>  allBodies = new List<GunBodyData>();
 
         [Header("Generate Settings")]
         [Tooltip("When true every available slot is filled; " +
@@ -22,17 +24,11 @@ namespace GunAssemblyTool
         [Tooltip("Probability that each slot receives an attachment when fillAllSlots is false.")]
         public float slotFillChance = 0.8f;
 
-        [Header("Player Integration")]
-        [Tooltip("Drag the Player GameObject here so the spawner can wire up " +
-                 "onHpBonusChanged and pass the active controller reference " +
-                 "each time a new gun is spawned.")]
-        public Player player;
-
         // The gun GameObject currently instantiated in the scene.
         private GameObject _currentBodyInstance;
 
         // Generates the first gun as soon as the scene starts.
-        private void Start() => Randomize();
+        private void Start()  => Randomize();
 
         // Listens for left mouse button clicks and triggers a new generation on each press.
         private void Update() { if (Input.GetMouseButtonDown(0)) Randomize(); }
@@ -66,6 +62,8 @@ namespace GunAssemblyTool
                 return;
             }
 
+            // Instantiate the new gun body as a child of this GameObject so it
+            // inherits the spawner's world transform.
             _currentBodyInstance = Instantiate(bodyData.bodyPrefab, transform);
             _currentBodyInstance.transform.localPosition = Vector3.zero;
             _currentBodyInstance.transform.localRotation = Quaternion.identity;
@@ -73,7 +71,11 @@ namespace GunAssemblyTool
             StartCoroutine(ApplyNextFrame(config, bodyData));
         }
 
-        // Waits one frame then applies the configuration and wires up Player events.
+        // Waits one frame after instantiation before calling ApplyConfiguration.
+        // This ensures all GunAttachmentPoint Awake() calls on the new prefab's
+        // child nodes have completed before the controller attempts to look them up.
+        // Without this delay the controller's _points dictionary is empty and
+        // attachment visuals will not appear in the scene.
         private IEnumerator ApplyNextFrame(GunConfiguration config, GunBodyData bodyData)
         {
             yield return null;
@@ -87,27 +89,9 @@ namespace GunAssemblyTool
                 yield break;
             }
 
-            // Inject the registry into the freshly instantiated controller.
+            // Pass the registry explicitly because the controller's own registry field
+            // may still be null immediately after instantiation.
             controller.ApplyConfiguration(config, allBodies, registry);
-
-            // Wire the controller to the Player so HP bonus and ammo updates flow through.
-            if (player != null)
-            {
-                // Update the player's active controller reference so OnReload can
-                // read CurrentAmmoCapacity from the new gun.
-                player.activeGunController = controller;
-
-                // Clear any listeners from the previous gun then bind to the new one.
-                // This ensures only the current gun's events drive the player stats.
-                controller.onHpBonusChanged.RemoveAllListeners();
-                controller.onHpBonusChanged.AddListener(player.BuffAttributes);
-
-                // Immediately push the new gun's barrel HP bonus and ammo capacity
-                // to the UI so the display is correct before the player fires or reloads.
-                player.BuffAttributes(controller.State.ComputeBarrelHpBonus());
-                player.stats?.UIMaxAmmo(controller.CurrentAmmoCapacity);
-                player.stats?.UIAmmo(controller.CurrentAmmoCapacity);
-            }
 
             Debug.Log(
                 $"[RandomGunSpawner] Body={bodyData.bodyId} | " +

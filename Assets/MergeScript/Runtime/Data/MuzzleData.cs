@@ -11,12 +11,10 @@ namespace GunAssemblyTool
         [Tooltip("Flag this as a suppressor to trigger audio swap logic in your game.")]
         public bool isSuppressor = false;
 
-        [Tooltip("Noise reduction factor (0 = no reduction, 1 = silent). " +
-                 "Only meaningful when isSuppressor is true.")]
         [Range(0f, 1f)]
+        [Tooltip("Noise reduction factor. Only relevant when isSuppressor is true.")]
         public float noiseReduction = 0f;
 
-        // Locks attachType to Muzzle and runs the base validation.
         protected override void OnValidate()
         {
             attachType = AttachmentType.Muzzle;

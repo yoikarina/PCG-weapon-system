@@ -15,27 +15,4 @@ namespace GunAssemblyTool
         Underbarrel,
         Skin
     }
-
-    // Specifies the thread size on a barrel or muzzle attachment.
-    // A slot's allowedThreads whitelist is checked against this value
-    // during compatibility resolution.
-    public enum ThreadType
-    {
-        None,       // No thread — muzzle attachments cannot be fitted
-        Standard,   // Most common thread; fits most suppressors and brakes
-        Large,      // Heavy barrel thread for high-calibre weapons
-        Shotgun     // Shotgun-specific thread size
-    }
-
-    // Specifies the physical magazine format of a magazine attachment.
-    // A slot's allowedMags whitelist is checked against this value
-    // during compatibility resolution.
-    public enum MagType
-    {
-        None,       // No magazine well (e.g. fixed internal magazine)
-        AR,         // AR / M4 / M16 double-stack format
-        AK,         // AK-pattern curved magazine format
-        Shotgun,    // Shotgun tube or box magazine format
-        Pistol      // Single-stack pistol magazine format
-    }
 }

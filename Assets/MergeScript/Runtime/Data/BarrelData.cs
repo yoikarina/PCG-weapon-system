@@ -11,7 +11,10 @@ namespace GunAssemblyTool
         [Tooltip("Display-only barrel length in millimetres. Has no effect on stats.")]
         public float barrelLengthMM = 400f;
 
-        [Tooltip("HP bonus granted to the player while this barrel is equipped. " +
+        // HP bonus forwarded to Player via GunAssemblyController.onHpBonusChanged.
+        // This is kept as a dedicated field (not in the stat list) because it affects
+        // the player character rather than the gun's combat stats.
+        [Tooltip("Player HP bonus while this barrel is equipped. " +
                  "Wire GunAssemblyController.onHpBonusChanged to Player.BuffAttributes.")]
         public int hpBonus = 0;
 
