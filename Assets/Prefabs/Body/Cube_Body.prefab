@@ -25,8 +25,8 @@ Transform:
   m_GameObject: {fileID: 98535237950942009}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.16451614, z: 0.987742}
-  m_LocalScale: {x: 3.225807, y: 3.225807, z: 3.225807}
+  m_LocalPosition: {x: 0, y: 0.16451618, z: 0.9877423}
+  m_LocalScale: {x: 3.2258065, y: 3.2258065, z: 3.2258065}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 72209447402221020}
@@ -152,7 +152,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1673324667326177375}
-  - component: {fileID: 2428634471476747532}
   m_Layer: 0
   m_Name: Socket_Stock
   m_TagString: Untagged
@@ -169,28 +168,12 @@ Transform:
   m_GameObject: {fileID: 7166664191423982628}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.00967742, z: -0.98387104}
-  m_LocalScale: {x: 3.2258067, y: 3.2258067, z: 3.2258067}
+  m_LocalPosition: {x: 0, y: -0.009677423, z: -0.98387134}
+  m_LocalScale: {x: 3.2258065, y: 3.2258065, z: 3.2258065}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 72209447402221020}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2428634471476747532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7166664191423982628}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d1fb5e4d41b02e4b816190905293834, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAttachmentPoint
-  slotType: 3
-  localPositionOffset: {x: 0, y: 0, z: 0}
-  localRotationOffset: {x: 0, y: 0, z: 0}
-  currentAttachmentInstance: {fileID: 0}
 --- !u!1 &7410526254328545339
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,7 +183,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6489445184256481628}
-  - component: {fileID: 7015077572865019078}
   m_Layer: 0
   m_Name: Socket_Magazine
   m_TagString: Untagged
@@ -217,28 +199,12 @@ Transform:
   m_GameObject: {fileID: 7410526254328545339}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.26774195, z: 0.17741936}
-  m_LocalScale: {x: 3.225807, y: 3.225807, z: 3.225807}
+  m_LocalPosition: {x: 0, y: -0.26774204, z: 0.17741941}
+  m_LocalScale: {x: 3.2258065, y: 3.2258065, z: 3.2258065}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 72209447402221020}
   m_LocalEulerAnglesHint: {x: -16.77, y: 0, z: 0}
---- !u!114 &7015077572865019078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7410526254328545339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d1fb5e4d41b02e4b816190905293834, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunAttachmentPoint
-  slotType: 0
-  localPositionOffset: {x: 0, y: 0, z: 0}
-  localRotationOffset: {x: 0, y: 0, z: 0}
-  currentAttachmentInstance: {fileID: 0}
 --- !u!1 &7725883066137650866
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,8 +290,8 @@ Transform:
   m_GameObject: {fileID: 8875702578902948279}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.33516133, z: -0.39677423}
-  m_LocalScale: {x: 3.2258067, y: 3.2258067, z: 3.2258067}
+  m_LocalPosition: {x: 0, y: 0.33516142, z: -0.39677435}
+  m_LocalScale: {x: 3.2258065, y: 3.2258065, z: 3.2258065}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 72209447402221020}

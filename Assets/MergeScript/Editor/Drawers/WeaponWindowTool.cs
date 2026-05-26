@@ -102,6 +102,7 @@ public class WeaponWindowTool : EditorWindow
 
         EnsureDataFolders();
         LoadOrCreateSharedData();
+        WeaponToolSettingsWorkbench.LoadSettings();
         LoadLibrary();
         SceneView.duringSceneGui += OnSceneGUI;
     }
@@ -653,7 +654,7 @@ public class WeaponWindowTool : EditorWindow
 
                 Handles.EndGUI();
 
-                Repaint();
+                //Repaint();
             }
             // Right-click context menu
             if (e.type == EventType.MouseDown && e.button == 1 && buttonRect.Contains(e.mousePosition))
@@ -1016,23 +1017,28 @@ public class WeaponWindowTool : EditorWindow
             int index = assetLibrary[selectedTab].IndexOf(currentPrefabAsset);
             if (index >= 0) assetLibrary[selectedTab][index] = saved;
 
-            calibrationStatus[saved] = true;
+            // 👇 【核心修复】：必须先 Remove，再赋值 true！
+            // 否则覆盖同一个 Prefab 时，会导致刚标记的绿灯瞬间被删除。
             calibrationStatus.Remove(currentPrefabAsset);
+            calibrationStatus[saved] = true;
 
             if (selectedTab == 0 && bodyDataMap.TryGetValue(currentPrefabAsset, out var bd))
             {
                 bd.bodyPrefab = saved; bd.partObject = saved;
-                bodyDataMap.Remove(currentPrefabAsset); bodyDataMap[saved] = bd;
+                bodyDataMap.Remove(currentPrefabAsset);
+                bodyDataMap[saved] = bd;
                 EditorUtility.SetDirty(bd);
             }
             else if (selectedTab > 0 && attachDataMap.TryGetValue(currentPrefabAsset, out var ad))
             {
                 ad.attachmentPrefab = saved;
-                attachDataMap.Remove(currentPrefabAsset); attachDataMap[saved] = ad;
+                attachDataMap.Remove(currentPrefabAsset);
+                attachDataMap[saved] = ad;
                 EditorUtility.SetDirty(ad);
             }
 
-            SaveLibrary(); RefreshRegistry();
+            SaveLibrary();
+            RefreshRegistry();
             Debug.Log($"[WeaponWorkbench] Calibrated: {savePath}");
         }
         ClearWorkbench();
@@ -1047,10 +1053,24 @@ public class WeaponWindowTool : EditorWindow
             {
                 var sObj = new GameObject(kvp.Value);
                 socket = sObj.transform;
-                socket.SetParent(currentTargetObject.transform);
+                // 这里恢复为 true，让 Unity 帮我们处理初始的层级关系
+                socket.SetParent(currentTargetObject.transform, true);
             }
+
+            // 1. 对齐世界位置和旋转
             socket.position = kvp.Key.transform.position;
             socket.rotation = kvp.Key.transform.rotation;
+
+            // 2. 👇【核心修复】：动态计算并抵消枪身的缩放！
+            // 获取枪身当前的绝对世界缩放 (lossyScale)
+            Vector3 parentScale = currentTargetObject.transform.lossyScale;
+
+            // 赋予插槽“反向比例”，确保它不管在多大/多小的枪身下，它的世界大小永远是 1
+            socket.localScale = new Vector3(
+                1f / parentScale.x,
+                1f / parentScale.y,
+                1f / parentScale.z
+            );
         }
         return true;
     }
