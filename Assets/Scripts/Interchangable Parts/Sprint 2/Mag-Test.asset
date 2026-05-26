@@ -21,3 +21,8 @@ MonoBehaviour:
   name: 
   magSize: 30
   magazineCategory: 1
+  attackBase: 100
+  critDmg: 10.6
+  critChange: 8.4
+  attackFlat: 60
+  attackPercentage: 1.47

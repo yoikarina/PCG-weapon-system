@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
 
     public UIStats stats;
     public GunData currentGun;
+    public DamageCalculation dmgCalc;
 
     private void OnEnable()
     {
@@ -58,6 +59,8 @@ public class Player : MonoBehaviour
     public void Shoot()
     {        
         currentGun.CurrentAmmo();
+        int accumulatedDmg = dmgCalc.DamageCalc(currentGun); // Place this later in Bullet when collision is registered
+        Debug.Log(accumulatedDmg);
         stats.UIAmmo(currentGun.currentAmmo);
     }
 

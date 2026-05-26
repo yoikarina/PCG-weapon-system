@@ -1,0 +1,9 @@
+{
+    "name": "DamageCalculationTests",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

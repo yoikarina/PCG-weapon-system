@@ -10,20 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7028e0e51c67b5a43af3587a6c07ad54, type: 3}
-  m_Name: Mag-Test2
+  m_Name: New Magazine Data
   m_EditorClassIdentifier: Assembly-CSharp::MagazineData
   slotType: 0
   threadType: 0
   magType: 0
-  partObject: {fileID: 4712502318906787044, guid: b377ccba7577db54ebc6b164091bf9b7, type: 3}
-  weaponDatas:
-  - {fileID: 11400000, guid: 86b441d003e82fb439b1ff62904e0233, type: 2}
-  - {fileID: 11400000, guid: 6fe8e90e5839e9b468c5ec95a2748d85, type: 2}
+  partObject: {fileID: 0}
+  weaponDatas: []
   name: 
-  magSize: 42
-  magazineCategory: 1
-  attackBase: 100
-  critDmg: 17.3
-  critChange: 9.1
-  attackFlat: 75
-  attackPercentage: 2.38
+  magSize: 0
+  magazineCategory: 0

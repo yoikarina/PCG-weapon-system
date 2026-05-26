@@ -8,4 +8,16 @@ public class MagazineData : Attachments
     public int magSize;
     public MagType magazineCategory;
 
+    // Base
+    public float attackBase;
+
+    // Additional buffs
+    public float critDmg;
+    public float critChange;
+    public float attackFlat;
+    public float attackPercentage;
+
+
+    // Additional debuffs
+
 }

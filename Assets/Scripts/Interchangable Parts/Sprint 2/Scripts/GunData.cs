@@ -8,9 +8,18 @@ public class GunData : MonoBehaviour
 {
     public List<PartData> equippedParts = new();
 
-    [Header("Stats")]
+    [Header("base Stats")]
     public int magSize;
     public int hitPoints;
+    public float baseCritDmg;
+    public float attackBase;
+
+    [Header("Stats buff")]
+    public float critDmg;
+    public float critChange;
+    public float attackFlat;
+    public float attackPercentage;
+
 
     [Header("Current count ammo")]
     public int currentAmmo;
@@ -49,13 +58,26 @@ public class GunData : MonoBehaviour
         StatReset();
 
         foreach (PartData part in equippedParts) {
+            if (part is ReceiverData body) {
+                baseCritDmg = body.critDmgBase;
+                critDmg = body.critDmg;
+                critChange = body.critChange;
+            }
+
+
             if (part is MagazineData mag) {
                 magSize = mag.magSize;
+                critDmg += mag.critDmg;
+                critChange += mag.critChange;
+                attackFlat = mag.attackFlat;
+                attackPercentage = mag.attackPercentage;
+                attackBase = mag.attackBase;
+
             }
 
             if (part is BarrelData bar) {
                 hitPoints = bar.buffHP;
-            } 
+            }
         }
     }
     public void SwapGun()
