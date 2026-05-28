@@ -35,7 +35,7 @@ public class DamageCalculation : MonoBehaviour
             Stats.ShowStats(Calc);
         }
 
-        float totalPower = attackBase + attackFlat + (attackBase * attackPercentage);
+        float totalPower = attackBase + attackFlat + (attackBase * (attackPercentage / 100f));
 
         int random = Random.Range(0, maximumCritChange);
         if (random < critChange) {
