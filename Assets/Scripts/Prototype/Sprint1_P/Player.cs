@@ -101,8 +101,6 @@ public class Player : MonoBehaviour
         bullet.gameObject.SetActive(true);
     }
 
-    public int ammoCap = 0;
-
     void OnRelease(Bullet bullet)
     {
         bullet.gameObject.SetActive(false);
@@ -116,7 +114,6 @@ public class Player : MonoBehaviour
       
         currentGun.CurrentAmmo();
         int accumulatedDmg = dmgCalc.DamageCalc(currentGun);
-        Debug.Log(accumulatedDmg);
         bullet.Spawn(bullet.transform.forward * force, accumulatedDmg);
         StartCoroutine(DelayedDisable(2, bullet));
         stats.UIAmmo(currentGun.currentAmmo);

@@ -51,11 +51,12 @@ public class DamageCalculation : MonoBehaviour
 
         finalDmg = (int)calculatedDmg;
         if (Stats != null) {
-            Stats.ShowDamage(finalDmg);
+            //Stats.ShowDamage(finalDmg);
         }
         return finalDmg;
     }
 
+    // For Unit Testing
     public int CalculateDamage(GunData calc)
     {
         float calculatedDmg;
