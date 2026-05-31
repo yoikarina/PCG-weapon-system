@@ -11,9 +11,18 @@ public class Player : MonoBehaviour
 
     private bool firstGunInitialized = false;
 
+    //Camera Look Around Variables
+    private Vector2 lookInput = Vector2.zero;
+    private bool invertY = false;
+    private float xRotation = 0f;
+    private float yRotation = 0f;
+    public float mouseSensitivity = 0.5f;
+
+    [Header("Connection with other objects/scripts")]
     public UIStats stats;
     public GunData currentGun;
     public DamageCalculation dmgCalc;
+    public Camera playerCamera;
 
     private void OnEnable()
     {
@@ -21,6 +30,7 @@ public class Player : MonoBehaviour
         playerControls.actions["Shoot"].performed += Shooting;
         playerControls.actions["Reload"].performed += Reloading;
         playerControls.actions["SwapGun"].performed += Swapping;
+        playerControls.actions["LookAround"].performed += OnLook;
     }
 
     private void OnDisable()
@@ -29,6 +39,23 @@ public class Player : MonoBehaviour
         playerControls.actions["Shoot"].performed -= Shooting;
         playerControls.actions["Reload"].performed -= Reloading;
         playerControls.actions["SwapGun"].performed -= Swapping;
+        playerControls.actions["LookAround"].performed -= OnLook;
+    }
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+        LookingAround();
+    }
+
+    public void LookingAround()
+    {
+        float mouseX = lookInput.x * mouseSensitivity;
+        float mouseY = lookInput.y * mouseSensitivity * (invertY ? -1 : 1);
+        yRotation += mouseX;
+        xRotation = Mathf.Clamp(xRotation - mouseY, -90f, 90f);
+        //transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
     }
 
     public void Reloading(InputAction.CallbackContext context)
