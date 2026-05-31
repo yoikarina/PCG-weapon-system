@@ -1,5 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
+using UnityEngine.Pool;
 using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
@@ -23,6 +26,13 @@ public class Player : MonoBehaviour
     public GunData currentGun;
     public DamageCalculation dmgCalc;
     public Camera playerCamera;
+    public GameObject spawnLocation;
+    public Bullet bulletPrefab;
+
+    private bool cooldown = false;
+    private ObjectPool<Bullet> pool;
+    public Vector3 bulletDirection;
+    public float force;
 
     private void OnEnable()
     {
@@ -81,14 +91,41 @@ public class Player : MonoBehaviour
         }
     }
 
-    //int thisWeapon;
+    private Bullet CreateItem()
+    {
+        return Instantiate(bulletPrefab);
+    }
+
+    void OnGet(Bullet bullet)
+    {
+        bullet.gameObject.SetActive(true);
+    }
+
+    public int ammoCap = 0;
+
+    void OnRelease(Bullet bullet)
+    {
+        bullet.gameObject.SetActive(false);
+    }
 
     public void Shoot()
-    {        
+    {
+        Bullet bullet = pool.Get();
+        bullet.transform.position = spawnLocation.transform.position;
+        bullet.transform.rotation = playerCamera.transform.rotation; 
+      
         currentGun.CurrentAmmo();
-        int accumulatedDmg = dmgCalc.DamageCalc(currentGun); // Place this later in Bullet when collision is registered
+        int accumulatedDmg = dmgCalc.DamageCalc(currentGun);
         Debug.Log(accumulatedDmg);
+        bullet.Spawn(bullet.transform.forward * force, accumulatedDmg);
+        StartCoroutine(DelayedDisable(2, bullet));
         stats.UIAmmo(currentGun.currentAmmo);
+    }
+
+    private IEnumerator DelayedDisable(float Time, Bullet bullet)
+    {
+        yield return new WaitForSeconds(Time);
+        pool.Release(bullet);
     }
 
     public void CheckData()
@@ -113,7 +150,16 @@ public class Player : MonoBehaviour
     {
         stats.UIHealthPoints(baseHitPoints);
         firstGunInitialized = true;
-        CheckData();      
+        CheckData();
+
+        pool = new ObjectPool<Bullet>(
+            createFunc: CreateItem,
+            actionOnGet: OnGet,
+            actionOnRelease: OnRelease,
+            maxSize: 5);
+
+        force = 200;
+
     }
 
     public void BuffAttributes()

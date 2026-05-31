@@ -1,0 +1,25 @@
+using UnityEngine;
+
+public class Bullet : MonoBehaviour
+{
+    public Vector3 spawnLocation { get; private set; }
+    public Rigidbody Rigidbody { get; private set; }
+
+    private void Awake()
+    {
+        Rigidbody = GetComponent<Rigidbody>();
+    }
+
+    public void Spawn(Vector3 SpawnForce, int damage)
+    {
+        Rigidbody.AddForce(SpawnForce);
+
+        Debug.Log(damage);
+    }
+
+    private void OnDisable()
+    {
+        Rigidbody.angularVelocity = Vector3.zero;
+        Rigidbody.linearVelocity = Vector3.zero;
+    }
+}

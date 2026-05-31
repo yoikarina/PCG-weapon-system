@@ -39,12 +39,11 @@ public class DamageCalculation : MonoBehaviour
 
         int random = Random.Range(0, maximumCritChange);
         if (random < critChange) {
-            Debug.Log("Gets here");
             float CritDmg = baseCritDmg + critDmg;
             float critMulti = 1f + (CritDmg / 100f);
             //calculatedDmg = attackBase * (1f + (CritDmg / 100f)) + attackFlat + (attackBase * attackPercentage);
             calculatedDmg = totalPower * critMulti;
-            Debug.Log("Damage: " + calculatedDmg);
+            //Debug.Log("Damage: " + calculatedDmg);
         } else {
             //calculatedDmg = attackBase + attackFlat + (attackBase * (int)attackPercentage);
             calculatedDmg = totalPower;
@@ -80,18 +79,4 @@ public class DamageCalculation : MonoBehaviour
             return false;
         }
     }
-
-    //public int TestDamage()
-    //{
-    //    attackBase = 100;
-    //    attackFlat = 50;
-    //    attackPercentage = 250;
-
-    //    float totalPower = attackBase + attackFlat + (attackBase * (attackPercentage / 100f));
-
-
-    //    return (int)totalPower;
-    //}
-
-
 }
