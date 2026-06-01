@@ -10,15 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19ed381f21adf354f92063e78d134519, type: 3}
-  m_Name: AR_N_Body
+  m_Name: AR_C 1_Body
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunBodyData
-  bodyId: ar_n
-  displayName: AR_N
-  bodyPrefab: {fileID: 8757571087193942518, guid: 83240cd2d4c94fe4e97d944df0231745, type: 3}
-  partObject: {fileID: 8757571087193942518, guid: 83240cd2d4c94fe4e97d944df0231745, type: 3}
-  tags:
-  - pistol
-  - shotgun
+  bodyId: ar_c_1
+  displayName: AR_C 1
+  bodyPrefab: {fileID: 4118874998455669609, guid: 32a007e3408a6124f92047474e324358, type: 3}
+  partObject: {fileID: 4118874998455669609, guid: 32a007e3408a6124f92047474e324358, type: 3}
+  tags: []
   slots:
   - slotType: 0
   - slotType: 1
