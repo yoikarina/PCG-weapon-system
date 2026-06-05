@@ -490,6 +490,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4867542787786560065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 8638956998371506090, guid: 00ae471c0af501a4cb908b2014c7a235, type: 3}
+  m_PrefabInstance: {fileID: 5714388092581146384}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6124413846938024624}
+  m_Layer: 0
+  m_Name: 'AR_B_Mag (Missing Prefab with guid: 00ae471c0af501a4cb908b2014c7a235)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6124413846938024624
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1996181228687725984, guid: 00ae471c0af501a4cb908b2014c7a235, type: 3}
+  m_PrefabInstance: {fileID: 5714388092581146384}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4867542787786560065}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: -0.045778647, z: 0.16761732}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2939591940835352794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5079521814632665102
 GameObject:
   m_ObjectHideFlags: 0
@@ -817,8 +848,3 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 00ae471c0af501a4cb908b2014c7a235, type: 3}
---- !u!4 &6124413846938024624 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1996181228687725984, guid: 00ae471c0af501a4cb908b2014c7a235, type: 3}
-  m_PrefabInstance: {fileID: 5714388092581146384}
-  m_PrefabAsset: {fileID: 0}

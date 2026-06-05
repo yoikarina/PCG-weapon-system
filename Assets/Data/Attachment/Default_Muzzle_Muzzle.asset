@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 119fd28260f5e7248852db2be3303588, type: 3}
+  m_Name: Default_Muzzle_Muzzle
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.MuzzleData
+  attachmentId: default_muzzle
+  displayName: Default_Muzzle
+  attachType: 2
+  requiredTags:
+  - shotgun
+  forbiddenTags:
+  - bullpup
+  stats: []
+  attachmentPrefab: {fileID: 40420896432465170, guid: 9f35cc3cb6e9e4340ac38371436a711e, type: 3}
