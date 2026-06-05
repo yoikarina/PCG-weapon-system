@@ -23,4 +23,8 @@ MonoBehaviour:
   - slotType: 2
   - slotType: 3
   - slotType: 4
-  stats: []
+  stats:
+  - key: Max Damage
+    value: 0
+  - key: Min Damage
+    value: 0
