@@ -29,6 +29,8 @@ public class Bullet : MonoBehaviour
     {
         if(collision.gameObject.TryGetComponent<Enemy>(out Enemy enemyComponent)) {
             enemyComponent.dealDamage(damageBullet);
+            gameObject.SetActive(false);
         }
+        gameObject.SetActive(false);
     }
 }

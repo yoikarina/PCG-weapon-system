@@ -3,13 +3,31 @@
     "name": "PlayerControls",
     "maps": [
         {
-            "name": "GunHandling",
-            "id": "0b3d8e25-58dc-4128-97ac-7a1853ebf5cf",
+            "name": "Player",
+            "id": "d0156ef8-241f-48f1-b2f9-9102c3ef186d",
             "actions": [
                 {
-                    "name": "Shoot",
+                    "name": "Moving",
+                    "type": "PassThrough",
+                    "id": "bf17f4d7-5d87-43da-bf5d-33166a47506b",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LookAround",
+                    "type": "Value",
+                    "id": "c39f600b-47d0-46fa-9f88-3a8a21770c10",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "SwapGun",
                     "type": "Button",
-                    "id": "3f29af44-2f97-4490-9597-4edcdee2779f",
+                    "id": "65144fe8-ec1e-47c1-ad0a-113bd42947cd",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -18,16 +36,25 @@
                 {
                     "name": "Reload",
                     "type": "Button",
-                    "id": "fe364424-e3c0-4a41-980d-bbabb3d1d13d",
+                    "id": "46b051fa-7cfa-4072-abcf-eafcd1ca29fe",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SwapGun",
+                    "name": "Shoot",
                     "type": "Button",
-                    "id": "3b070059-095a-4ce5-98e8-a2c7a929fd3b",
+                    "id": "e60df8c9-c22e-40a5-9f20-9caa19790a38",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Drop",
+                    "type": "Button",
+                    "id": "535e9a3d-28c7-4ecf-93e1-51bc698a0e4e",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -36,19 +63,85 @@
             ],
             "bindings": [
                 {
-                    "name": "",
-                    "id": "e256c2c2-87b6-48d6-b830-b45aec9d6198",
-                    "path": "<Mouse>/leftButton",
+                    "name": "2D Vector",
+                    "id": "493fc9fd-667f-428a-b9b6-35114a4ec3b7",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Moving",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "95b0960d-6834-4366-84a5-f364f128f314",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Moving",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "ae43a35b-ed77-4c11-bd66-cbb8ff436149",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Moving",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "e34a7221-af2a-43dd-b8e3-d9cbc141aa2c",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Moving",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "a157ce40-859c-47e9-a3a7-e8bf8060d7da",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Moving",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "e77f2afe-a3bf-4133-845e-c34b7340cea5",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookAround",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "a933a228-6014-45bc-b248-5c016e65094f",
+                    "id": "87d734b0-379b-4312-b9a1-ca65ee45406c",
+                    "path": "<Keyboard>/#(E)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwapGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "67e99e43-ebb9-49d1-baaf-341ab8a13cad",
                     "path": "<Keyboard>/#(R)",
                     "interactions": "",
                     "processors": "",
@@ -59,40 +152,23 @@
                 },
                 {
                     "name": "",
-                    "id": "fbe60d60-fa7c-492c-8f28-7bc08f1389b8",
-                    "path": "<Keyboard>/#(E)",
+                    "id": "970c07bd-383b-4d1a-9830-4d16145de84e",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwapGun",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Camera",
-            "id": "18ae27ec-dc22-46a4-b973-918f1168f2e0",
-            "actions": [
-                {
-                    "name": "LookAround",
-                    "type": "Value",
-                    "id": "a1936e06-49f7-4627-bc84-68770d1c9fa4",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "91271bd4-416c-4889-9fc0-d42367258b55",
-                    "path": "<Mouse>/delta",
+                    "id": "2dfb9df7-11d8-4313-ae97-875a72b2d6a6",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LookAround",
+                    "action": "Drop",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

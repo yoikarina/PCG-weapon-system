@@ -1,11 +1,18 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
+using UnityEngine.Pool;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 public class GunData : MonoBehaviour
 {
+    public GameObject bulletSpawnLocation;
+    public Bullet bulletPrefab;
+    public DamageCalculation dmgCalc;
+
     public List<PartData> equippedParts = new();
 
     [Header("base Stats")]
@@ -13,6 +20,7 @@ public class GunData : MonoBehaviour
     public int hitPoints;
     public float baseCritDmg;
     public float attackBase;
+    public float force;
 
     [Header("Stats buff")]
     public float critDmg;
@@ -20,13 +28,17 @@ public class GunData : MonoBehaviour
     public float attackFlat;
     public float attackPercentage;
 
-
     [Header("Current count ammo")]
     public int currentAmmo;
-    public int swappedAmmo; // When swapped forces gun to continue from this value
 
-    private bool reload = false;
-    private bool gunSwapped = false;
+    private bool reloadNeeded = false;
+
+    private ObjectPool<Bullet> pool;
+
+    //LineRenderer - Temporary
+    /*public LineRenderer lineR;
+    public float laserWidth = 0.1f;
+    public float laserMaxLength = 500f;*/
 
     public void Initialize(PartData[] part)
     {
@@ -42,6 +54,42 @@ public class GunData : MonoBehaviour
     public void Start()
     {
         SetAmmo();
+        currentAmmo = magSize;
+
+        ObjectPooling();
+        
+        //force = 200;    
+    }
+
+    public void Update()
+    {
+        Debug.DrawRay(bulletSpawnLocation.transform.position, transform.forward, Color.green);
+        //ShootLaserFromTargetPosition(bulletSpawnLocation.transform.position, transform.forward, laserMaxLength);
+    }
+
+    /*void ShootLaserFromTargetPosition(Vector3 targetPosition, Vector3 direction, float length)
+    {
+        AnimationCurve curve = new AnimationCurve();
+        curve.AddKey(0.05f, 0.05f);
+        curve.AddKey(0.05f, 0.05f);
+        lineR.widthCurve = curve;
+        Vector3 endPosition = targetPosition + (direction * length);
+        lineR.SetPosition(0, targetPosition);
+        lineR.SetPosition(1, endPosition);
+    }*/
+
+    public void ShootingTheGun(Camera playerCamera)
+    {
+        Bullet bullet = pool.Get();
+        bullet.transform.position = bulletSpawnLocation.transform.position;
+        bullet.transform.rotation = transform.rotation;
+
+        int accumulatedDmg = dmgCalc.DamageCalc(this);
+        if (!reloadNeeded) {
+            bullet.Spawn(bullet.transform.forward * force, accumulatedDmg);
+        }
+        StartCoroutine(DelayedDisable(2, bullet));
+        CurrentAmmo();
     }
 
     public void StatReset()
@@ -80,30 +128,18 @@ public class GunData : MonoBehaviour
             }
         }
     }
-    public void SwapGun()
-    {
-        gunSwapped = true;
-        swappedAmmo = currentAmmo;
-        BuildStats();
-        SetAmmo();
-    }
 
     public void CurrentAmmo()
     {
-        if (gunSwapped) {
-            currentAmmo = swappedAmmo;
-            gunSwapped = false;
+        if (reloadNeeded) {
+            SetAmmo();
+            reloadNeeded = false;
+            return;
         }
-
         currentAmmo--;
         if (currentAmmo == 0) {
-            reload = true;
-        }
-
-        if (reload && currentAmmo < 0) {
-            SetAmmo();
-            reload = false;
-        }
+            reloadNeeded = true;
+        }     
     }
 
     public void Reload()
@@ -114,5 +150,35 @@ public class GunData : MonoBehaviour
     public void SetAmmo()
     {
         currentAmmo = magSize;
+    }
+
+    private void ObjectPooling()
+    {
+        pool = new ObjectPool<Bullet>(
+            createFunc: CreateItem,
+            actionOnGet: OnGet,
+            actionOnRelease: OnRelease,
+            maxSize: 5);
+    }
+
+    private IEnumerator DelayedDisable(float Time, Bullet bullet)
+    {
+        yield return new WaitForSeconds(Time);
+        pool.Release(bullet);
+    }
+
+    private Bullet CreateItem()
+    {
+        return Instantiate(bulletPrefab);
+    }
+
+    void OnGet(Bullet bullet)
+    {
+        bullet.gameObject.SetActive(true);
+    }
+
+    void OnRelease(Bullet bullet)
+    {
+        bullet.gameObject.SetActive(false);
     }
 }

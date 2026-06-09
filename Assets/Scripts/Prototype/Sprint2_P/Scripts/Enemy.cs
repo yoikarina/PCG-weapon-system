@@ -13,7 +13,9 @@ public class Enemy : MonoBehaviour
     {
         float finalDefense = armor + baseDefense;
         int accumulation = damage - (int)finalDefense;
-
+        if (accumulation < 0) {
+        accumulation = 0;
+        }
         stats.ShowDamage(accumulation);
     }
 
