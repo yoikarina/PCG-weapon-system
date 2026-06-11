@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10a0ef3c6e6eac64fa30ec1aa0dc750b, type: 3}
-  m_Name: Optic floating_Scope
+  m_Name: Optic_E_Scope
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.ScopeData
-  attachmentId: optic_floating
-  displayName: Optic floating
+  attachmentId: optic_e
+  displayName: Optic_E
   attachType: 4
   requiredTags: []
   forbiddenTags: []
   stats: []
-  attachmentPrefab: {fileID: 1068344555575134899, guid: bccda4016768f0242bbaad18d3a9fa4d, type: 3}
+  attachmentPrefab: {fileID: 8038077407854948563, guid: 7d6c6dab242caa245a675c34304cdac9, type: 3}
