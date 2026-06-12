@@ -101,10 +101,10 @@ public class GunData : MonoBehaviour
         hitPoints = 0;
     }
 
+    //
     public void BuildStats()
     {
         StatReset();
-
         foreach (PartData part in equippedParts) {
             if (part is ReceiverData body) {
                 baseCritDmg = body.critDmgBase;
@@ -152,6 +152,9 @@ public class GunData : MonoBehaviour
         currentAmmo = magSize;
     }
 
+    /// <summary>
+    /// Object Pooling
+    /// </summary>
     private void ObjectPooling()
     {
         pool = new ObjectPool<Bullet>(
