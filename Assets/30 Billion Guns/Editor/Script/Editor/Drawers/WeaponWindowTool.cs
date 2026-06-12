@@ -1829,7 +1829,7 @@ public class WeaponWindowTool : EditorWindow
 
     private static void EnsureDataFolders()
     {
-        string[] folders = { "Assets/PCG Weapon Workbench", "Assets/PCG Weapon Workbench/Data", GUNBODY_PATH, ATTACHMENT_PATH, REGISTRY_PATH, TAGS_PATH };
+        string[] folders = { "Assets/30 Billion Guns", "Assets/30 Billion Guns/Data", GUNBODY_PATH, ATTACHMENT_PATH, REGISTRY_PATH, TAGS_PATH };
         foreach (var folder in folders)
         {
             if (!AssetDatabase.IsValidFolder(folder))

@@ -21,8 +21,9 @@ public class WeaponDataWatcher : AssetPostprocessor
         foreach (var deletedPath in deletedAssets)
         {
             if (!deletedPath.EndsWith(".asset")) continue;
-            if (!deletedPath.StartsWith("Assets/Data/Gunbody/") &&
-                !deletedPath.StartsWith("Assets/Data/Attachment/")) continue;
+            if (!deletedPath.Contains("/30 Billion Guns/Data/Gunbody/") &&
+                !deletedPath.Contains("/30 Billion Guns/Data/Attachment/"))
+                continue;
 
             // The asset is already gone so AssetPathToGUID may return empty.
             // We stored the GUID in EditorPrefs before deletion via SaveDataGuidMap.
