@@ -16,7 +16,11 @@ public class Enemy : MonoBehaviour
         if (accumulation < 0) {
         accumulation = 0;
         }
-        stats.ShowDamage(accumulation);
+
+        if (stats != null) {
+            stats.ShowDamage(accumulation);
+        }
+        
     }
 
 }

@@ -26,7 +26,9 @@ public class Player : MonoBehaviour
     public WeaponCollection nearbyWeapon;
     //public DamageCalculation dmgCalc;
     public Camera playerCamera;
-    
+
+    private Rigidbody playerRB;
+
 
     //private bool cooldown = false;
     private ObjectPool<Bullet> pool;
@@ -97,7 +99,9 @@ public class Player : MonoBehaviour
             move = new Vector3(moveDirection.x, 0, moveDirection.y);
         }
 
-        playerRB.linearVelocity = move * adjustedSpeed * 50f;
+        move = move * adjustedSpeed * 50f;
+        move.y = playerRB.linearVelocity.y;
+        playerRB.linearVelocity = move;
     }
 
     public void LookingAround()
@@ -182,7 +186,7 @@ public class Player : MonoBehaviour
         // Gun attribute buff/debuffs
 
     }
-    private Rigidbody playerRB;
+    
 
     void Start()
     {
