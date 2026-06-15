@@ -12,13 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbbb5cc0e35569a42ade31c44abbca7a, type: 3}
   m_Name: AttachmentRegistry
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.AttachmentRegistry
-  allAttachments:
-  - {fileID: 11400000, guid: b9743b23fc47e4e41b96240e9e07aff9, type: 2}
-  - {fileID: 11400000, guid: eb625aa83cc350b4690e4957bb2b3e1c, type: 2}
-  - {fileID: 11400000, guid: 41a08fb64eb26924b894eea3cdae1ca1, type: 2}
-  - {fileID: 11400000, guid: e3d2aa4b74a23094a9d71f66582c6e14, type: 2}
-  - {fileID: 11400000, guid: f074b34948b13b44b8b4dbe000981098, type: 2}
-  - {fileID: 11400000, guid: 91fb3b04f35e4f34eb9c12813dd4e6fd, type: 2}
-  - {fileID: 11400000, guid: 77e94d87397a386498bb84ecd928d4ec, type: 2}
-  - {fileID: 11400000, guid: 4c53f886a5d6d934d951cb47dba6c680, type: 2}
-  - {fileID: 11400000, guid: 9d3f1014ca42ce649a43795f90f91e76, type: 2}
+  allAttachments: []
