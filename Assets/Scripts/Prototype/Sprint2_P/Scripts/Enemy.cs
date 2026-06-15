@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -7,6 +9,7 @@ public class Enemy : MonoBehaviour
     public float armor;
     public float baseDefense;
 
+    public TMP_Text damageNumber;
     public UIStats stats;
 
     public void dealDamage(int damage)
@@ -18,9 +21,17 @@ public class Enemy : MonoBehaviour
         }
 
         if (stats != null) {
-            stats.ShowDamage(accumulation);
+            //stats.ShowDamage(accumulation);
+            damageNumber.SetText(accumulation.ToString());
+            StartCoroutine(Vanish());
         }
         
+    }
+
+    IEnumerator Vanish()
+    {
+        yield return new WaitForSeconds(2f);
+        damageNumber.SetText("");
     }
 
 }
