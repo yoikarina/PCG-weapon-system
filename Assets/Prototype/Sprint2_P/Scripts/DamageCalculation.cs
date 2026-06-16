@@ -1,3 +1,4 @@
+using GunAssemblyTool;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -22,24 +23,24 @@ public class DamageCalculation : MonoBehaviour
     private int maximumCritChange = 100;
 
 
-    public int DamageCalc(GunData Calc)
+    public int DamageCalc(GunInstanceData Calc)
     {
-        baseCritDmg = Calc.baseCritDmg;
-        critDmg = Calc.critDmg;
-        attackBase = Calc.attackBase;
-        critChange = Calc.critChange;   
-        attackFlat = Calc.attackFlat;
-        attackPercentage = Calc.attackPercentage;
+        //baseCritDmg = Calc.stats.critDmg;
+        //critDmg = Calc.critDmg;
+        //attackBase = Calc.attackBase;
+        //critChange = Calc.critChange;   
+        //attackFlat = Calc.attackFlat;
+        //attackPercentage = Calc.attackPercentage;
 
-        if (Stats != null) {
-            Stats.ShowStats(Calc);
-        }
+        //if (Stats != null) {
+        //    Stats.ShowStats(Calc);
+        //}
 
-        float totalPower = attackBase + attackFlat + (attackBase * (attackPercentage / 100f));
+        float totalPower = attackBase + Calc.stats.damage + (attackBase * (Calc.stats.GetFloat("DamagePercentage") / 100f));
 
         int random = Random.Range(0, maximumCritChange);
-        if (random < critChange) {
-            float CritDmg = baseCritDmg + critDmg;
+        if (random < Calc.stats.GetFloat("CritChange")) {
+            float CritDmg = baseCritDmg + Calc.stats.GetFloat("CritDamage");
             float critMulti = 1f + (CritDmg / 100f);
             //calculatedDmg = attackBase * (1f + (CritDmg / 100f)) + attackFlat + (attackBase * attackPercentage);
             calculatedDmg = totalPower * critMulti;
@@ -57,27 +58,27 @@ public class DamageCalculation : MonoBehaviour
     }
 
     // For Unit Testing
-    public int CalculateDamage(GunData calc)
-    {
-        float calculatedDmg;
-        float totalPower = calc.attackBase + calc.attackFlat + (calc.attackBase * (calc.attackPercentage / 100f));
+    //public int CalculateDamage(GunData calc)
+    //{
+    //    float calculatedDmg;
+    //    float totalPower = calc.attackBase + calc.attackFlat + (calc.attackBase * (calc.attackPercentage / 100f));
 
-        if (calc.critChange == 100) {
-            float critMulti = 1f + (calc.critDmg / 100f);
-            calculatedDmg = totalPower * critMulti;
-        } else {
-            calculatedDmg = totalPower;
-        }
+    //    if (calc.critChange == 100) {
+    //        float critMulti = 1f + (calc.critDmg / 100f);
+    //        calculatedDmg = totalPower * critMulti;
+    //    } else {
+    //        calculatedDmg = totalPower;
+    //    }
 
-            return (int)calculatedDmg;
-    }
+    //        return (int)calculatedDmg;
+    //}
 
-    public bool CritProcs(GunData calc)
-    {
-        if (calc.critChange == 100) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    //public bool CritProcs(GunData calc)
+    //{
+    //    if (calc.critChange == 100) {
+    //        return true;
+    //    } else {
+    //        return false;
+    //    }
+    //}
 }

@@ -1,3 +1,4 @@
+using GunAssemblyTool;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,9 +14,11 @@ public class GunData : MonoBehaviour
     public Bullet bulletPrefab;
     public DamageCalculation dmgCalc;
 
+    public GunRuntimeData runtimeData;
+
     public List<PartData> equippedParts = new();
 
-    [Header("base Stats")]
+    /*[Header("base Stats")]
     public int magSize;
     public int hitPoints;
     public float baseCritDmg;
@@ -26,7 +29,7 @@ public class GunData : MonoBehaviour
     public float critDmg;
     public float critChange;
     public float attackFlat;
-    public float attackPercentage;
+    public float attackPercentage;*/
 
     [Header("Current count ammo")]
     public int currentAmmo;
@@ -40,21 +43,33 @@ public class GunData : MonoBehaviour
     public float laserWidth = 0.1f;
     public float laserMaxLength = 500f;*/
 
-    public void Initialize(PartData[] part)
-    {
-        equippedParts.Clear();
+    //public void Initialize(PartData[] part)
+    //{
+    //    equippedParts.Clear();
 
-        foreach (PartData partData in part) {
-            if (partData != null)
-                equippedParts.Add(partData);
-        }
-        BuildStats();
-    }
+    //    foreach (PartData partData in part) {
+    //        if (partData != null)
+    //            equippedParts.Add(partData);
+    //    }
+    //    BuildStats();
+    //}
 
-    public void Start()
+    public float damage;
+    private GunInstanceData gun;
+
+    public void Awake()
     {
+        //runtimeData = GetComponent<GunRuntimeData>();
+        gun = runtimeData.GetGunData();
+        damage = gun.stats.damage;
+        Debug.Log("Damage: " + damage);
+
+        float critChange = gun.stats.GetFloat("CritChange");
+        Debug.Log("critDamage: " + critChange);
+
         SetAmmo();
-        currentAmmo = magSize;
+        currentAmmo = gun.stats.ammoCapacity;
+        Debug.Log("Ammo: " + currentAmmo);
 
         ObjectPooling();
         
@@ -63,7 +78,7 @@ public class GunData : MonoBehaviour
 
     public void Update()
     {
-        Debug.DrawRay(bulletSpawnLocation.transform.position, transform.forward, Color.green);
+        //Debug.DrawRay(bulletSpawnLocation.transform.position, transform.forward, Color.green);
         //ShootLaserFromTargetPosition(bulletSpawnLocation.transform.position, transform.forward, laserMaxLength);
     }
 
@@ -84,50 +99,50 @@ public class GunData : MonoBehaviour
         bullet.transform.position = bulletSpawnLocation.transform.position;
         bullet.transform.rotation = transform.rotation;
 
-        int accumulatedDmg = dmgCalc.DamageCalc(this);
+        int accumulatedDmg = dmgCalc.DamageCalc(gun);
         if (!reloadNeeded) {
-            bullet.Spawn(bullet.transform.forward * force, accumulatedDmg);
+            bullet.Spawn(bullet.transform.forward * gun.stats.fireRange, accumulatedDmg);
         }
         StartCoroutine(DelayedDisable(2, bullet));
         CurrentAmmo();
     }
 
-    public void StatReset()
-    {
-        //Weapon
-        magSize = 0;
+    //public void StatReset()
+    //{
+    //    //Weapon
+    //    magSize = 0;
 
-        //Player
-        hitPoints = 0;
-    }
+    //    //Player
+    //    hitPoints = 0;
+    //}
 
-    //
-    public void BuildStats()
-    {
-        StatReset();
-        foreach (PartData part in equippedParts) {
-            if (part is ReceiverData body) {
-                baseCritDmg = body.critDmgBase;
-                critDmg = body.critDmg;
-                critChange = body.critChange;
-            }
+    ////
+    //public void BuildStats()
+    //{
+    //    StatReset();
+    //    foreach (PartData part in equippedParts) {
+    //        if (part is ReceiverData body) {
+    //            baseCritDmg = body.critDmgBase;
+    //            critDmg = body.critDmg;
+    //            critChange = body.critChange;
+    //        }
 
 
-            if (part is MagazineData mag) {
-                magSize = mag.magSize;
-                critDmg += mag.critDmg;
-                critChange += mag.critChange;
-                attackFlat = mag.attackFlat;
-                attackPercentage = mag.attackPercentage;
-                attackBase = mag.attackBase;
+    //        if (part is MagazineData mag) {
+    //            magSize = mag.magSize;
+    //            critDmg += mag.critDmg;
+    //            critChange += mag.critChange;
+    //            attackFlat = mag.attackFlat;
+    //            attackPercentage = mag.attackPercentage;
+    //            attackBase = mag.attackBase;
 
-            }
+    //        }
 
-            if (part is BarrelData bar) {
-                hitPoints = bar.buffHP;
-            }
-        }
-    }
+    //        if (part is BarrelData bar) {
+    //            hitPoints = bar.buffHP;
+    //        }
+    //    }
+    //}
 
     public void CurrentAmmo()
     {
@@ -149,7 +164,7 @@ public class GunData : MonoBehaviour
 
     public void SetAmmo()
     {
-        currentAmmo = magSize;
+        currentAmmo = gun.stats.ammoCapacity;
     }
 
     /// <summary>

@@ -172,10 +172,10 @@ public class Player : MonoBehaviour
             return;
 
         // UI ammunition counter
-        stats.UIMaxAmmo(currentWeapon.gunData.magSize);
+        /////stats.UIMaxAmmo(currentWeapon.gunData.magSize);
         //stats.UIAmmo(currentWeapon.gunData.swappedAmmo);
         if (firstGunInitialized) {
-            stats.UIAmmo(currentWeapon.gunData.magSize);
+            //////stats.UIAmmo(currentWeapon.gunData.magSize);
             firstGunInitialized = false;       
         }
         
@@ -214,7 +214,7 @@ public class Player : MonoBehaviour
     public void BuffAttributes()
     {
         currentHitPoints = baseHitPoints;
-        currentHitPoints += currentWeapon.gunData.hitPoints;
+       //// currentHitPoints += currentWeapon.gunData.hitPoints;
         stats.UIHealthPoints(currentHitPoints);
     }
 
