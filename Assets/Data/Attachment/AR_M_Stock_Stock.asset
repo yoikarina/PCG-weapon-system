@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7711c0549d1156f4798e8e022d6929c2, type: 3}
+  m_Name: AR_M_Stock_Stock
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.StockData
+  attachmentId: ar_m_stock
+  displayName: AR_M_Stock
+  attachType: 3
+  requiredTags: []
+  forbiddenTags: []
+  stats:
+  - key: Damage
+    value: 0
+  attachmentPrefab: {fileID: 19676272253634518, guid: b69c0b8b2695f344089a189429fc1d0d, type: 3}
