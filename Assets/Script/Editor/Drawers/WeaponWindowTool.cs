@@ -1703,6 +1703,7 @@ public class WeaponWindowTool : EditorWindow
     // Save / load
     // ─────────────────────────────────────────────────────────────────────────
 
+
     private void SaveEquipAssembly()
     {
         if (equipAssemblyRoot == null || equipLoadout[0] == null)
@@ -1712,6 +1713,21 @@ public class WeaponWindowTool : EditorWindow
         }
         string path = EditorUtility.SaveFilePanelInProject("Save Full Weapon", "NewWeaponLoadout", "prefab", "Select save path");
         if (string.IsNullOrEmpty(path)) return;
+
+        // INSERT: bake the data contract onto the prefab before saving 
+        var runtimeData = equipAssemblyRoot.GetComponent<GunAssemblyTool.GunRuntimeData>();
+        if (runtimeData == null)
+            runtimeData = equipAssemblyRoot.AddComponent<GunAssemblyTool.GunRuntimeData>();
+
+        bodyDataMap.TryGetValue(equipLoadout[0], out runtimeData.body);   // [0] = receiver/body
+
+        runtimeData.attachments.Clear();
+        for (int i = 1; i < equipLoadout.Length; i++)                     // [1..] = attachments
+            if (equipLoadout[i] != null &&
+                attachDataMap.TryGetValue(equipLoadout[i], out var attachData))
+                runtimeData.attachments.Add(attachData);
+        // END INSERT 
+
         GameObject saved = PrefabUtility.SaveAsPrefabAssetAndConnect(equipAssemblyRoot, path, InteractionMode.UserAction);
         if (saved != null) { Debug.Log($"[WeaponWorkbench] Saved: {path}"); EditorGUIUtility.PingObject(saved); }
     }
