@@ -193,6 +193,41 @@ public class WeaponWindowTool : EditorWindow
         GUILayout.Space(4);
         WB_LabelDim("Right-click any asset to view its data.");
         WB_EndBlock();
+
+        GUILayout.Space(10);
+        DrawSectionHeader("Auto Tag Assignment");
+        WB_BeginBlock();
+
+        bool newVal = EditorGUILayout.ToggleLeft(
+            "  Auto-assign tags on drop", WeaponToolSettingsWorkbench.autoAssignTags);
+        if (newVal != WeaponToolSettingsWorkbench.autoAssignTags)
+        {
+            WeaponToolSettingsWorkbench.autoAssignTags = newVal;
+            EditorPrefs.SetBool("WT_AutoAssignTags", newVal);
+        }
+
+        GUILayout.Space(4);
+        WB_LabelDim(
+            "When enabled, prefab names are split on underscores and each token " +
+            "is checked against the Tag Definitions list. Any match is automatically " +
+            "assigned on drop — no manual tagging needed.\n\n" +
+            "Naming convention:  Type_Part_Variant  e.g.  Pistol_Muzzle_FlashHider_A\n" +
+            "Use  _  as the word divider between tokens.");
+
+        GUILayout.Space(8);
+        EditorGUI.DrawRect(GUILayoutUtility.GetRect(0, 1), C_BORDER);
+        GUILayout.Space(6);
+
+        WB_LabelDim(
+            "Use the button below to retroactively assign missing tags to all " +
+            "prefabs already loaded in the workbench — useful if you've updated " +
+            "your naming convention after the initial import.");
+        GUILayout.Space(4);
+
+        if (GUILayout.Button("⟳  Assign Missing Tags to All Loaded Prefabs", EditorStyles.miniButton))
+            BulkAssignMissingTags();
+
+        WB_EndBlock();
     }
 
     private void DrawCalibrationUI()
@@ -1276,8 +1311,18 @@ public class WeaponWindowTool : EditorWindow
                 assetLibrary[selectedTab].Add(go);
                 calibrationStatus[go] = CheckIfCalibrated(go, selectedTab);
 
-                if (selectedTab == 0) AutoCreateGunBodyData(go);
-                else AutoCreateAttachmentData(go, selectedTab);
+                if (selectedTab == 0)
+                {
+                    AutoCreateGunBodyData(go);
+                    if (WeaponToolSettingsWorkbench.autoAssignTags && bodyDataMap.TryGetValue(go, out var bodyData))
+                        AutoAssignTagsFromName(go, bodyData.tags, bodyData);
+                }
+                else
+                {
+                    AutoCreateAttachmentData(go, selectedTab);
+                    if (WeaponToolSettingsWorkbench.autoAssignTags && attachDataMap.TryGetValue(go, out var attData))
+                        AutoAssignTagsFromName(go, attData.requiredTags, attData);
+                }
 
                 changed = true;
             }
@@ -1292,6 +1337,67 @@ public class WeaponWindowTool : EditorWindow
             if (changed) { SaveLibrary(); RefreshRegistry(); }
         }
         evt.Use();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Tag auto-assignment
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private int AutoAssignTagsFromName(GameObject prefab, List<string> tagList, Object owner)
+    {
+        if (_tagDefs == null || prefab == null || tagList == null || owner == null) return 0;
+
+        string[] tokens = prefab.name.ToLowerInvariant()
+            .Split(new[] { '_', '-', ' ', '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+        int added = 0;
+        foreach (string token in tokens)
+        {
+            if (_tagDefs.IsValid(token) && !tagList.Contains(token))
+            {
+                tagList.Add(token);
+                added++;
+            }
+        }
+
+        if (added > 0)
+        {
+            EditorUtility.SetDirty(owner);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[WeaponWorkbench] Auto-assigned tags to '{prefab.name}': " +
+                      string.Join(", ", tagList));
+        }
+
+        return added;
+    }
+
+    private void BulkAssignMissingTags()
+    {
+        int totalAssigned = 0;
+
+        // Tab 0 = Receivers (GunBodyData)
+        foreach (var go in assetLibrary[0])
+        {
+            if (go == null) continue;
+            if (bodyDataMap.TryGetValue(go, out var bodyData))
+                totalAssigned += AutoAssignTagsFromName(go, bodyData.tags, bodyData);
+        }
+
+        // Tabs 1+ = Attachments (AttachmentData.requiredTags)
+        for (int tab = 1; tab < assetLibrary.Length; tab++)
+        {
+            foreach (var go in assetLibrary[tab])
+            {
+                if (go == null) continue;
+                if (attachDataMap.TryGetValue(go, out var attData))
+                    totalAssigned += AutoAssignTagsFromName(go, attData.requiredTags, attData);
+            }
+        }
+
+        if (totalAssigned > 0)
+            Debug.Log($"[WeaponWorkbench] Bulk tag assignment complete — {totalAssigned} tag(s) added across all prefabs.");
+        else
+            Debug.Log("[WeaponWorkbench] Bulk tag assignment: no missing tags found.");
     }
 
     // ─────────────────────────────────────────────────────────────────────────
