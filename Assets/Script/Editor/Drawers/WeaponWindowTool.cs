@@ -83,10 +83,6 @@ public class WeaponWindowTool : EditorWindow
         return keywords.Any(k => lower.Contains(k));
     }
 
-    // ── Tag auto-assignment ───────────────────────────────────────────────────
-    private bool _autoAssignTags = true;
-    private const string PREF_AUTO_ASSIGN_TAGS = "WT_AutoAssignTags";
-
     // ── Stat list UI state ────────────────────────────────────────────────────
     private string _customStatKey = "";
     private GunAssemblyTool.StatValueType _customStatType = GunAssemblyTool.StatValueType.Float;
@@ -117,7 +113,6 @@ public class WeaponWindowTool : EditorWindow
         EnsureDataFolders();
         LoadOrCreateSharedData();
         WeaponToolSettingsWorkbench.LoadSettings();
-        _autoAssignTags = EditorPrefs.GetBool(PREF_AUTO_ASSIGN_TAGS, true); //TEMP implementation
         LoadLibrary();
         SceneView.duringSceneGui += OnSceneGUI;
     }
@@ -202,11 +197,12 @@ public class WeaponWindowTool : EditorWindow
         DrawSectionHeader("Auto Tag Assignment");
         WB_BeginBlock();
 
-        bool newVal = EditorGUILayout.ToggleLeft("  Auto-assign tags on drop", _autoAssignTags);
-        if (newVal != _autoAssignTags)
+        bool newVal = EditorGUILayout.ToggleLeft(
+            "  Auto-assign tags on drop", WeaponToolSettingsWorkbench.autoAssignTags);
+        if (newVal != WeaponToolSettingsWorkbench.autoAssignTags)
         {
-            _autoAssignTags = newVal;
-            EditorPrefs.SetBool(PREF_AUTO_ASSIGN_TAGS, _autoAssignTags);
+            WeaponToolSettingsWorkbench.autoAssignTags = newVal;
+            EditorPrefs.SetBool("WT_AutoAssignTags", newVal);
         }
 
         GUILayout.Space(4);
@@ -216,6 +212,19 @@ public class WeaponWindowTool : EditorWindow
             "assigned on drop — no manual tagging needed.\n\n" +
             "Naming convention:  Type_Part_Variant  e.g.  Pistol_Muzzle_FlashHider_A\n" +
             "Use  _  as the word divider between tokens.");
+
+        GUILayout.Space(8);
+        EditorGUI.DrawRect(GUILayoutUtility.GetRect(0, 1), C_BORDER);
+        GUILayout.Space(6);
+
+        WB_LabelDim(
+            "Use the button below to retroactively assign missing tags to all " +
+            "prefabs already loaded in the workbench — useful if you've updated " +
+            "your naming convention after the initial import.");
+        GUILayout.Space(4);
+
+        if (GUILayout.Button("⟳  Assign Missing Tags to All Loaded Prefabs", EditorStyles.miniButton))
+            BulkAssignMissingTags();
 
         WB_EndBlock();
     }
@@ -1304,13 +1313,13 @@ public class WeaponWindowTool : EditorWindow
                 if (selectedTab == 0)
                 {
                     AutoCreateGunBodyData(go);
-                    if (_autoAssignTags && bodyDataMap.TryGetValue(go, out var bodyData))
+                    if (WeaponToolSettingsWorkbench.autoAssignTags && bodyDataMap.TryGetValue(go, out var bodyData))
                         AutoAssignTagsFromName(go, bodyData.tags, bodyData);
                 }
                 else
                 {
                     AutoCreateAttachmentData(go, selectedTab);
-                    if (_autoAssignTags && attachDataMap.TryGetValue(go, out var attData))
+                    if (WeaponToolSettingsWorkbench.autoAssignTags && attachDataMap.TryGetValue(go, out var attData))
                         AutoAssignTagsFromName(go, attData.requiredTags, attData);
                 }
 
@@ -1333,32 +1342,61 @@ public class WeaponWindowTool : EditorWindow
     // Tag auto-assignment
     // ─────────────────────────────────────────────────────────────────────────
 
-    private void AutoAssignTagsFromName(GameObject prefab, List<string> tagList, Object owner)
+    private int AutoAssignTagsFromName(GameObject prefab, List<string> tagList, Object owner)
     {
-        if (_tagDefs == null || prefab == null || tagList == null || owner == null) return;
+        if (_tagDefs == null || prefab == null || tagList == null || owner == null) return 0;
 
-        // Split on underscores, hyphens, spaces, and dots — covers most
-        // naming conventions (pistol_silencer_a, pistol-grip.v2, etc.)
         string[] tokens = prefab.name.ToLowerInvariant()
             .Split(new[] { '_', '-', ' ', '.' }, System.StringSplitOptions.RemoveEmptyEntries);
 
-        bool added = false;
+        int added = 0;
         foreach (string token in tokens)
         {
             if (_tagDefs.IsValid(token) && !tagList.Contains(token))
             {
                 tagList.Add(token);
-                added = true;
+                added++;
             }
         }
 
-        if (added)
+        if (added > 0)
         {
             EditorUtility.SetDirty(owner);
             AssetDatabase.SaveAssets();
             Debug.Log($"[WeaponWorkbench] Auto-assigned tags to '{prefab.name}': " +
                       string.Join(", ", tagList));
         }
+
+        return added;
+    }
+
+    private void BulkAssignMissingTags()
+    {
+        int totalAssigned = 0;
+
+        // Tab 0 = Receivers (GunBodyData)
+        foreach (var go in assetLibrary[0])
+        {
+            if (go == null) continue;
+            if (bodyDataMap.TryGetValue(go, out var bodyData))
+                totalAssigned += AutoAssignTagsFromName(go, bodyData.tags, bodyData);
+        }
+
+        // Tabs 1+ = Attachments (AttachmentData.requiredTags)
+        for (int tab = 1; tab < assetLibrary.Length; tab++)
+        {
+            foreach (var go in assetLibrary[tab])
+            {
+                if (go == null) continue;
+                if (attachDataMap.TryGetValue(go, out var attData))
+                    totalAssigned += AutoAssignTagsFromName(go, attData.requiredTags, attData);
+            }
+        }
+
+        if (totalAssigned > 0)
+            Debug.Log($"[WeaponWorkbench] Bulk tag assignment complete — {totalAssigned} tag(s) added across all prefabs.");
+        else
+            Debug.Log("[WeaponWorkbench] Bulk tag assignment: no missing tags found.");
     }
 
     // ─────────────────────────────────────────────────────────────────────────

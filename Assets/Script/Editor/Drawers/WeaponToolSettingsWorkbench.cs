@@ -5,28 +5,28 @@ public class WeaponToolSettingsWorkbench : EditorWindow
 {
     // Public static variables for direct access from the main workbench window
     public static GameObject dummyBody, dummyMuzzle, dummyScope, dummyStock, dummyMag;
+    public static bool autoAssignTags = true;
 
-    // Creates a dedicated settings entry in the Unity menu bar
+    private const string PREF_AUTO_ASSIGN = "WT_AutoAssignTags";
+
     [MenuItem("Tools/Weapon Workbench/⚙️ Global Dummy Settings", priority = 2)]
     public static void ShowWindow()
     {
-        GetWindow<WeaponToolSettingsWorkbench>("Global Settings").minSize = new Vector2(300, 220);
+        GetWindow<WeaponToolSettingsWorkbench>("Global Settings").minSize = new Vector2(300, 240);
     }
 
-    private void OnEnable()
-    {
-        // Automatically load saved settings when the window opens
-        LoadSettings();
-    }
+    private void OnEnable() => LoadSettings();
 
     private void OnGUI()
     {
         GUILayout.Space(10);
         GUILayout.Label("Global Base Dummy Settings", EditorStyles.boldLabel);
-        EditorGUILayout.HelpBox("Configure this once. Settings are automatically saved locally and do not need to be reconfigured.", MessageType.Info);
+        EditorGUILayout.HelpBox(
+            "Configure this once. Settings are automatically saved locally " +
+            "and do not need to be reconfigured.",
+            MessageType.Info);
         GUILayout.Space(10);
 
-        // Begin listening for any changes in the inspector fields
         EditorGUI.BeginChangeCheck();
 
         dummyBody = (GameObject)EditorGUILayout.ObjectField("Standard Receiver", dummyBody, typeof(GameObject), false);
@@ -35,14 +35,18 @@ public class WeaponToolSettingsWorkbench : EditorWindow
         dummyStock = (GameObject)EditorGUILayout.ObjectField("Standard Stock", dummyStock, typeof(GameObject), false);
         dummyMag = (GameObject)EditorGUILayout.ObjectField("Standard Magazine", dummyMag, typeof(GameObject), false);
 
-        // Immediately save if the user assigns or removes a prefab
+        GUILayout.Space(10);
+        GUILayout.Label("Tag Settings", EditorStyles.boldLabel);
+        autoAssignTags = EditorGUILayout.ToggleLeft("Auto-assign tags on prefab drop", autoAssignTags);
+
         if (EditorGUI.EndChangeCheck())
-        {
             SaveSettings();
-        }
     }
 
-    // ================= Core Persistence Logic =================
+    // ─────────────────────────────────────────────────────────────────────────
+    // Persistence
+    // ─────────────────────────────────────────────────────────────────────────
+
     public static void LoadSettings()
     {
         dummyBody = LoadPrefab("WT_DummyBody");
@@ -50,6 +54,7 @@ public class WeaponToolSettingsWorkbench : EditorWindow
         dummyScope = LoadPrefab("WT_DummyScope");
         dummyStock = LoadPrefab("WT_DummyStock");
         dummyMag = LoadPrefab("WT_DummyMag");
+        autoAssignTags = EditorPrefs.GetBool(PREF_AUTO_ASSIGN, true);
     }
 
     private static void SaveSettings()
@@ -59,12 +64,12 @@ public class WeaponToolSettingsWorkbench : EditorWindow
         SavePrefab("WT_DummyScope", dummyScope);
         SavePrefab("WT_DummyStock", dummyStock);
         SavePrefab("WT_DummyMag", dummyMag);
+        EditorPrefs.SetBool(PREF_AUTO_ASSIGN, autoAssignTags);
     }
 
     private static void SavePrefab(string key, GameObject obj)
     {
         if (obj == null) EditorPrefs.DeleteKey(key);
-        // Save the unique identifier (GUID) of the Prefab to ensure reliable loading across sessions
         else EditorPrefs.SetString(key, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(obj)));
     }
 
