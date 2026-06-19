@@ -83,6 +83,10 @@ public class WeaponWindowTool : EditorWindow
         return keywords.Any(k => lower.Contains(k));
     }
 
+    // ── Tag auto-assignment ───────────────────────────────────────────────────
+    private bool _autoAssignTags = true;
+    private const string PREF_AUTO_ASSIGN_TAGS = "WT_AutoAssignTags";
+
     // ── Stat list UI state ────────────────────────────────────────────────────
     private string _customStatKey = "";
     private GunAssemblyTool.StatValueType _customStatType = GunAssemblyTool.StatValueType.Float;
@@ -113,6 +117,7 @@ public class WeaponWindowTool : EditorWindow
         EnsureDataFolders();
         LoadOrCreateSharedData();
         WeaponToolSettingsWorkbench.LoadSettings();
+        _autoAssignTags = EditorPrefs.GetBool(PREF_AUTO_ASSIGN_TAGS, true); //TEMP implementation
         LoadLibrary();
         SceneView.duringSceneGui += OnSceneGUI;
     }
@@ -191,6 +196,27 @@ public class WeaponWindowTool : EditorWindow
         WB_LabelDim("●  Calibrated    →  double-click to assemble");
         GUILayout.Space(4);
         WB_LabelDim("Right-click any asset to view its data.");
+        WB_EndBlock();
+
+        GUILayout.Space(10);
+        DrawSectionHeader("Auto Tag Assignment");
+        WB_BeginBlock();
+
+        bool newVal = EditorGUILayout.ToggleLeft("  Auto-assign tags on drop", _autoAssignTags);
+        if (newVal != _autoAssignTags)
+        {
+            _autoAssignTags = newVal;
+            EditorPrefs.SetBool(PREF_AUTO_ASSIGN_TAGS, _autoAssignTags);
+        }
+
+        GUILayout.Space(4);
+        WB_LabelDim(
+            "When enabled, prefab names are split on underscores and each token " +
+            "is checked against the Tag Definitions list. Any match is automatically " +
+            "assigned on drop — no manual tagging needed.\n\n" +
+            "Naming convention:  Type_Part_Variant  e.g.  Pistol_Muzzle_FlashHider_A\n" +
+            "Use  _  as the word divider between tokens.");
+
         WB_EndBlock();
     }
 
@@ -1275,8 +1301,18 @@ public class WeaponWindowTool : EditorWindow
                 assetLibrary[selectedTab].Add(go);
                 calibrationStatus[go] = CheckIfCalibrated(go, selectedTab);
 
-                if (selectedTab == 0) AutoCreateGunBodyData(go);
-                else AutoCreateAttachmentData(go, selectedTab);
+                if (selectedTab == 0)
+                {
+                    AutoCreateGunBodyData(go);
+                    if (_autoAssignTags && bodyDataMap.TryGetValue(go, out var bodyData))
+                        AutoAssignTagsFromName(go, bodyData.tags, bodyData);
+                }
+                else
+                {
+                    AutoCreateAttachmentData(go, selectedTab);
+                    if (_autoAssignTags && attachDataMap.TryGetValue(go, out var attData))
+                        AutoAssignTagsFromName(go, attData.requiredTags, attData);
+                }
 
                 changed = true;
             }
@@ -1291,6 +1327,38 @@ public class WeaponWindowTool : EditorWindow
             if (changed) { SaveLibrary(); RefreshRegistry(); }
         }
         evt.Use();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Tag auto-assignment
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void AutoAssignTagsFromName(GameObject prefab, List<string> tagList, Object owner)
+    {
+        if (_tagDefs == null || prefab == null || tagList == null || owner == null) return;
+
+        // Split on underscores, hyphens, spaces, and dots — covers most
+        // naming conventions (pistol_silencer_a, pistol-grip.v2, etc.)
+        string[] tokens = prefab.name.ToLowerInvariant()
+            .Split(new[] { '_', '-', ' ', '.' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+        bool added = false;
+        foreach (string token in tokens)
+        {
+            if (_tagDefs.IsValid(token) && !tagList.Contains(token))
+            {
+                tagList.Add(token);
+                added = true;
+            }
+        }
+
+        if (added)
+        {
+            EditorUtility.SetDirty(owner);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[WeaponWorkbench] Auto-assigned tags to '{prefab.name}': " +
+                      string.Join(", ", tagList));
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
