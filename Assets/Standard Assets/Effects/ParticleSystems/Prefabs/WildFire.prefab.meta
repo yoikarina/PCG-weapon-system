@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2c32987c2bc01844a94adfb917dd677d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Prefabs/WildFire.prefab
+  uploadId: 149151

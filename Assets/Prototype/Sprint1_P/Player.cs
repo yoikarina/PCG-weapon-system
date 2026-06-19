@@ -58,7 +58,7 @@ public class Player : MonoBehaviour
         shootAction = playerControls.FindActionMap("Player").FindAction("Shoot");
         swapAction = playerControls.FindActionMap("Player").FindAction("SwapGun");
         reloadAction = playerControls.FindActionMap("Player").FindAction("Reload");
-        dropAction = playerControls.FindActionMap("Player").FindAction("Drop");   
+        dropAction = playerControls.FindActionMap("Player").FindAction("Drop");
     }
 
 
@@ -81,7 +81,8 @@ public class Player : MonoBehaviour
         reloadAction.Disable();
         dropAction.Disable();
     }
-
+    float weight;
+    float playerSpeed = 10f;
     public void MoveAround()
     {
         Vector3 move = Vector3.zero;
@@ -98,8 +99,13 @@ public class Player : MonoBehaviour
         } else {
             move = new Vector3(moveDirection.x, 0, moveDirection.y);
         }
+        
 
-        move = move * adjustedSpeed * 50f;
+        weight = currentWeapon != null ? currentWeapon.gunData.weight : 0f;
+        adjustedSpeed = playerSpeed * (1f / (1f + weight * 0.05f));
+
+        move = move * adjustedSpeed;
+        Debug.Log(move);
         move.y = playerRB.linearVelocity.y;
         playerRB.linearVelocity = move;
     }
@@ -142,7 +148,7 @@ public class Player : MonoBehaviour
             currentWeapon = nearbyWeapon;
             nearbyWeapon = null;
             stats.UIAmmo(currentWeapon.gunData.currentAmmo);
-            CheckData();
+            //CheckData();
         }
     }
 
@@ -159,7 +165,7 @@ public class Player : MonoBehaviour
         if (dropAction.triggered && currentWeapon != null) {
             currentWeapon.pickUpController.DropGun();
             currentWeapon = null;
-            CheckData();
+            stats.Dropped(currentWeapon);
         }      
     }
 
@@ -172,8 +178,8 @@ public class Player : MonoBehaviour
             return;
 
         // UI ammunition counter
-        /////stats.UIMaxAmmo(currentWeapon.gunData.magSize);
-        //stats.UIAmmo(currentWeapon.gunData.swappedAmmo);
+        stats.UIMaxAmmo(currentWeapon.gunData.maxAmmo);
+        stats.UIAmmo(currentWeapon.gunData.currentAmmo);
         if (firstGunInitialized) {
             //////stats.UIAmmo(currentWeapon.gunData.magSize);
             firstGunInitialized = false;       
@@ -192,9 +198,11 @@ public class Player : MonoBehaviour
     {
         playerRB = GetComponent<Rigidbody>();
 
+
+        nearbyWeapon = null;
         stats.UIHealthPoints(baseHitPoints);
         firstGunInitialized = true;
-        CheckData();
+        //CheckData();
     }
 
     void Update()

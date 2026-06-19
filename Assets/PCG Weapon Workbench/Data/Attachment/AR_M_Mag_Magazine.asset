@@ -30,4 +30,14 @@ MonoBehaviour:
     floatValue: 10
     intValue: 0
     boolValue: 0
+  - key: CritDamage
+    valueType: 0
+    floatValue: 50
+    intValue: 0
+    boolValue: 0
+  - key: DamagePercentage
+    valueType: 0
+    floatValue: 150
+    intValue: 0
+    boolValue: 0
   attachmentPrefab: {fileID: 171538322343247497, guid: 78b0053d94c14d24a93bc62e84b2caf1, type: 3}

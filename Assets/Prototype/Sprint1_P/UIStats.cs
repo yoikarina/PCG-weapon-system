@@ -26,7 +26,14 @@ public class UIStats : MonoBehaviour
 
     public void UIAmmo(int current)
     {
-        ammunitionCount.text = current + " / " + maxAmmunition;
+        ammunitionCount.text = current + " / " + maxAmmunition;   
+    }
+
+    public void Dropped(WeaponCollection dropped)
+    {
+        if (dropped == null) {
+            ammunitionCount.text = null;
+        } 
     }
 
     public void ColorChecker(bool comp)

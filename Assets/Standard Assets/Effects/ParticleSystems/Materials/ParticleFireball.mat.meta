@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 26ea534dcd83fe14c9173a52e151cce8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleFireball.mat
+  uploadId: 149151

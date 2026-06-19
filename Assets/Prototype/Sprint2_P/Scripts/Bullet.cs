@@ -10,10 +10,10 @@ public class Bullet : MonoBehaviour
         Rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void Spawn(Vector3 SpawnForce, int damage)
+    public void Spawn(Vector3 SpawnForce)
     {
         Rigidbody.AddForce(SpawnForce);
-        damageBullet = damage;
+        //damageBullet = damage;
         //Debug.Log(damage);
     }
 
@@ -27,10 +27,10 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.TryGetComponent<Enemy>(out Enemy enemyComponent)) {
-            enemyComponent.dealDamage(damageBullet);
-            gameObject.SetActive(false);
-        }
+        //if(collision.gameObject.TryGetComponent<Enemy>(out Enemy enemyComponent)) {
+        //    enemyComponent.dealDamage(damageBullet);
+        //    gameObject.SetActive(false);
+        //}
         gameObject.SetActive(false);
     }
 }

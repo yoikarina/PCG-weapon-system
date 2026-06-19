@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 5cd052ce7ea5a2f438f599e02de6a390
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Shaders/PriorityParticleAdd.shader
+  uploadId: 149151

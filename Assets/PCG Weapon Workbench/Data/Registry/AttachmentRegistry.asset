@@ -15,3 +15,6 @@ MonoBehaviour:
   allAttachments:
   - {fileID: 11400000, guid: 174acf63b8793d645acb3294f00dacb0, type: 2}
   - {fileID: 11400000, guid: 1173b2f51ab7ef4439812a8890dacac0, type: 2}
+  - {fileID: 11400000, guid: be3aba3a7e676664fb79345e174580d6, type: 2}
+  - {fileID: 11400000, guid: eed61ca81c7196647abc29f5766af5ea, type: 2}
+  - {fileID: 11400000, guid: 3d44003101f332447967fa9f76b30d5d, type: 2}

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 180149b1a35449044a27b451e816d2de
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Prefabs/Fireworks.prefab
+  uploadId: 149151

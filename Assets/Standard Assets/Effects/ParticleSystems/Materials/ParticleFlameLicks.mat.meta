@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 30289309b0c21224ea5b6fcc73b07d59
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleFlameLicks.mat
+  uploadId: 149151

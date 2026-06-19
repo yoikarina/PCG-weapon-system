@@ -24,4 +24,29 @@ MonoBehaviour:
     floatValue: 50
     intValue: 0
     boolValue: 0
+  - key: CritChange
+    valueType: 0
+    floatValue: 4
+    intValue: 0
+    boolValue: 0
+  - key: CritDamage
+    valueType: 0
+    floatValue: 10
+    intValue: 0
+    boolValue: 0
+  - key: Weight
+    valueType: 0
+    floatValue: 2
+    intValue: 0
+    boolValue: 0
+  - key: FireRange
+    valueType: 0
+    floatValue: 125
+    intValue: 0
+    boolValue: 0
+  - key: FireRate
+    valueType: 0
+    floatValue: 125
+    intValue: 0
+    boolValue: 0
   attachmentPrefab: {fileID: 3720483899666044592, guid: 72f82a584afe3d244973bb323c9c54c8, type: 3}

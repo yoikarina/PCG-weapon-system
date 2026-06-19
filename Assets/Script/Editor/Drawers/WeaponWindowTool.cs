@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using GunAssemblyTool;
+//using WeaponSystem;
 
 public class WeaponWindowTool : EditorWindow
 {
@@ -1719,6 +1720,12 @@ public class WeaponWindowTool : EditorWindow
         if (runtimeData == null)
             runtimeData = equipAssemblyRoot.AddComponent<GunAssemblyTool.GunRuntimeData>();
 
+        var runtTimeRigidbody = equipAssemblyRoot.GetComponent<Rigidbody>();
+        if (runtTimeRigidbody == null)
+            runtTimeRigidbody = equipAssemblyRoot.AddComponent<Rigidbody>();
+        
+        Debug.LogWarning("[WeaponWorkbench] Weapon saved. Still requires manual setup of script components: GunData, PickUpController, WeaponDetection, WeaponCollection.");
+
         bodyDataMap.TryGetValue(equipLoadout[0], out runtimeData.body);   // [0] = receiver/body
 
         runtimeData.attachments.Clear();
@@ -1729,7 +1736,21 @@ public class WeaponWindowTool : EditorWindow
         // END INSERT 
 
         GameObject saved = PrefabUtility.SaveAsPrefabAssetAndConnect(equipAssemblyRoot, path, InteractionMode.UserAction);
+        EnsureColliders(saved);
         if (saved != null) { Debug.Log($"[WeaponWorkbench] Saved: {path}"); EditorGUIUtility.PingObject(saved); }
+    }
+
+    private void EnsureColliders(GameObject root)
+    {
+        var trigger = root.AddComponent<BoxCollider>(); 
+        trigger.isTrigger = true;
+
+        var physics = root.AddComponent<BoxCollider>();
+        Vector3 center = new Vector3(-0.008849442f, 0.07164377f, 0);
+        Vector3 size = new Vector3(0.1665264f, 0.1766521f, 0);
+        physics.center = trigger.center = center;
+        physics.size = trigger.size = size;
+        physics.isTrigger = false;
     }
 
     private void ClearWorkbench()

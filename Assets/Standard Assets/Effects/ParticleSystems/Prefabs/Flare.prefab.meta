@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0438351a6e6422d43a09930e9be00ee9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Prefabs/Flare.prefab
+  uploadId: 149151

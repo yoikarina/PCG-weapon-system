@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ed1b89d39279f564ea077ad8e46f3595
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleSteamMobile.mat
+  uploadId: 149151

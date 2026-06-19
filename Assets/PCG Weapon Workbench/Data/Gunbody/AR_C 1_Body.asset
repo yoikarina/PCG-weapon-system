@@ -17,7 +17,7 @@ MonoBehaviour:
   bodyPrefab: {fileID: 4118874998455669609, guid: 32a007e3408a6124f92047474e324358, type: 3}
   partObject: {fileID: 4118874998455669609, guid: 32a007e3408a6124f92047474e324358, type: 3}
   tags: []
-  mediaData: {fileID: 0}
+  mediaData: {fileID: 11400000, guid: 55e7d3898dbe3fa44ad1de88bd26c3f7, type: 2}
   slots:
   - slotType: 0
   - slotType: 1
@@ -28,5 +28,25 @@ MonoBehaviour:
   - key: Damage
     valueType: 0
     floatValue: 75
+    intValue: 0
+    boolValue: 0
+  - key: Weight
+    valueType: 0
+    floatValue: 5
+    intValue: 0
+    boolValue: 0
+  - key: CritChange
+    valueType: 0
+    floatValue: 20
+    intValue: 0
+    boolValue: 0
+  - key: CritDamage
+    valueType: 0
+    floatValue: 40
+    intValue: 0
+    boolValue: 0
+  - key: FireRate
+    valueType: 0
+    floatValue: 150
     intValue: 0
     boolValue: 0
