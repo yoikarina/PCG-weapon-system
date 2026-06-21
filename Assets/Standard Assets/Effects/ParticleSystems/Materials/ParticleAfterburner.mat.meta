@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 89ff19d667a6a5d4bb76df1fcb718402
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleAfterburner.mat
+  uploadId: 149151

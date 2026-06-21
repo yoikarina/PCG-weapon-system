@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: cc4347574b823934ba11785e25895920
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Shaders/PriorityParticleAlpha.shader
+  uploadId: 149151

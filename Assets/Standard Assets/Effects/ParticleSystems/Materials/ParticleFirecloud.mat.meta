@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 77d08210df254d845885518314593544
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleFirecloud.mat
+  uploadId: 149151

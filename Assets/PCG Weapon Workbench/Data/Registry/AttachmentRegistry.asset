@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4584cdeec6a8884ca05d65e5b2a1bfe, type: 3}
+  m_Name: AttachmentRegistry
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.AttachmentRegistry
+  allAttachments:   
+  - {fileID: 11400000, guid: 174acf63b8793d645acb3294f00dacb0, type: 2}
+  - {fileID: 11400000, guid: 1173b2f51ab7ef4439812a8890dacac0, type: 2}
+  - {fileID: 11400000, guid: be3aba3a7e676664fb79345e174580d6, type: 2}
+  - {fileID: 11400000, guid: eed61ca81c7196647abc29f5766af5ea, type: 2}
+  - {fileID: 11400000, guid: 3d44003101f332447967fa9f76b30d5d, type: 2}

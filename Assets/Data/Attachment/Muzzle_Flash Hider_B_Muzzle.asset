@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 119fd28260f5e7248852db2be3303588, type: 3}
+  m_Name: Muzzle_Flash Hider_B_Muzzle
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.MuzzleData
+  attachmentId: muzzle_flash_hider_b
+  displayName: Muzzle_Flash Hider_B
+  attachType: 2
+  requiredTags: []
+  forbiddenTags: []
+  stats: []
+  attachmentPrefab: {fileID: 4178549964866901412, guid: cb12f56bb8ad920408cb4fb6639091cb, type: 3}

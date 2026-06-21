@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fae5d333f43a55744ab0c44fecefdcae
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Prefabs/Hose.prefab
+  uploadId: 149151

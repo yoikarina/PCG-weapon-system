@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b6fecef6c92b67147b638a07ef91195b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Prefabs/SteamMobile.prefab
+  uploadId: 149151

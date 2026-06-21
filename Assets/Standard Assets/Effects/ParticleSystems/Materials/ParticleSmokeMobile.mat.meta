@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 473d6d3ec0d161b4a85e466c8c6da3fb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleSmokeMobile.mat
+  uploadId: 149151

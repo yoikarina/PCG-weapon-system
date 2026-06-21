@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2909cb28371e6664b88130f37d454605
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/ParticleSystemsGuidelines.txt
+  uploadId: 149151

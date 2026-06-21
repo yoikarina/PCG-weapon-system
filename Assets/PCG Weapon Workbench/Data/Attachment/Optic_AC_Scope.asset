@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49240c28f68239a4f9f5a6559d7cd930, type: 3}
+  m_Name: Optic_AC_Scope
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.ScopeData
+  attachmentId: optic_ac
+  displayName: Optic_AC
+  attachType: 4
+  requiredTags: []
+  forbiddenTags: []
+  mediaOverride: {fileID: 0}
+  stats: []
+  attachmentPrefab: {fileID: 6720838672960671248, guid: aed3a4ce705ceac418e806e56318c3fc, type: 3}

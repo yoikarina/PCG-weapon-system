@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c50d77affeb31e14c9c062c282f13fc8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21064
+  packageName: Standard Assets for Unity 4.6
+  packageVersion: 1.0.3
+  assetPath: Assets/Standard Assets/Effects/ParticleSystems/Materials/ParticleSmokeWhite.mat
+  uploadId: 149151

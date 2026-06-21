@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29f473da96c9c64f9b6435929b17aca, type: 3}
+  m_Name: Muzzle_Suppressor_J_Sand_Muzzle
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.MuzzleData
+  attachmentId: muzzle_suppressor_j_sand
+  displayName: Muzzle_Suppressor_J_Sand
+  attachType: 2
+  requiredTags: []
+  forbiddenTags: []
+  mediaOverride: {fileID: 0}
+  stats: []
+  attachmentPrefab: {fileID: 3368867940768084717, guid: 0811da81937505946a8ec9f9bf051c5c, type: 3}
