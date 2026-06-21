@@ -17,20 +17,19 @@ public class WeaponWindowTool : EditorWindow
     private const string TAGS_PATH = "Assets/PCG Weapon Workbench/Data/Tags";
 
     // ── Theme ─────────────────────────────────────────────────────────────────
-    private static readonly Color C_ACCENT = new Color(0.44f, 0.75f, 0.75f, 1f); // #6FBFBF ice teal
-    private static readonly Color C_ACCENT_DIM = new Color(0.18f, 0.42f, 0.42f, 1f); // #2E6B6B dark teal
-    private static readonly Color C_BG_BLOCK = new Color(0.09f, 0.13f, 0.13f, 1f); // #172020 dark teal-black
-    private static readonly Color C_BORDER = new Color(0.44f, 0.75f, 0.75f, 0.40f); // teal border
-    private static readonly Color C_TEXT_MAIN = new Color(0.88f, 0.96f, 0.96f, 1f); // #E0F5F5 pale teal-white
-    private static readonly Color C_TEXT_DIM = new Color(0.38f, 0.58f, 0.58f, 1f); // #619494 muted teal
-    private static readonly Color C_DANGER = new Color(0.75f, 0.22f, 0.17f, 1f); // #C0392B red
-    private static readonly Color C_SUCCESS = new Color(0.27f, 0.60f, 0.32f, 1f); // #45993A green — confirm actions
+    private static readonly Color C_ACCENT = new Color(0.44f, 0.75f, 0.75f, 1f);
+    private static readonly Color C_ACCENT_DIM = new Color(0.18f, 0.42f, 0.42f, 1f);
+    private static readonly Color C_BG_BLOCK = new Color(0.09f, 0.13f, 0.13f, 1f);
+    private static readonly Color C_BORDER = new Color(0.44f, 0.75f, 0.75f, 0.40f);
+    private static readonly Color C_TEXT_MAIN = new Color(0.88f, 0.96f, 0.96f, 1f);
+    private static readonly Color C_TEXT_DIM = new Color(0.38f, 0.58f, 0.58f, 1f);
+    private static readonly Color C_DANGER = new Color(0.75f, 0.22f, 0.17f, 1f);
+    private static readonly Color C_SUCCESS = new Color(0.27f, 0.60f, 0.32f, 1f);
 
-    // ── Original UI state (unchanged from WeaponAlignmentTool) ────────────────
+    // ── UI state ──────────────────────────────────────────────────────────────
     private int selectedTab = 0;
     private string[] tabNames = { "Receiver", "Muzzle", "Optic", "Stock", "Magazine" };
 
-    // Key: original prefab  Value: auto-generated ScriptableObject
     private List<GameObject>[] assetLibrary = new List<GameObject>[5];
     private Dictionary<GameObject, GunBodyData> bodyDataMap = new Dictionary<GameObject, GunBodyData>();
     private Dictionary<GameObject, AttachmentData> attachDataMap = new Dictionary<GameObject, AttachmentData>();
@@ -57,15 +56,15 @@ public class WeaponWindowTool : EditorWindow
     private GameObject[] equipLoadout = new GameObject[5];
     private GameObject equipAssemblyRoot;
 
-    // ── Detail panel state ────────────────────────────────────────────────────
+    // Detail panel state
     private GameObject _selectedPrefab;
     private Vector2 _detailScroll;
 
-    // ── Shared data ───────────────────────────────────────────────────────────
+    // Shared data
     private TagDefinitions _tagDefs;
     private AttachmentRegistry _registry;
 
-    // ── Keyword whitelist per tab ─────────────────────────────────────────────
+    // Keyword whitelist per tab
     private static readonly string[][] TabKeywords = new string[][]
     {
         null,
@@ -84,7 +83,7 @@ public class WeaponWindowTool : EditorWindow
         return keywords.Any(k => lower.Contains(k));
     }
 
-    // ── Stat list UI state ────────────────────────────────────────────────────
+    // Stat list UI state
     private string _customStatKey = "";
     private GunAssemblyTool.StatValueType _customStatType = GunAssemblyTool.StatValueType.Float;
     private int _presetStatIdx = 0;
@@ -94,7 +93,6 @@ public class WeaponWindowTool : EditorWindow
     private bool _showAttMedia = false;
     private bool _statSaved = true;
 
-    // Persistent dropdown indices for tag editors.
     private int _bodyTagIdx = 0;
     private int _reqTagIdx = 0;
     private int _forbTagIdx = 0;
@@ -188,8 +186,9 @@ public class WeaponWindowTool : EditorWindow
         WB_BeginBlock();
         WB_LabelDim("Drag prefabs into the right panel to register them.");
         GUILayout.Space(4);
-        WB_LabelDim("○  Uncalibrated  →  double-click to calibrate");
-        WB_LabelDim("●  Calibrated    →  double-click to assemble");
+        WB_LabelDim("○  Receiver  →  double-click to calibrate (set sockets)");
+        WB_LabelDim("●  Calibrated  →  double-click to assemble");
+        WB_LabelDim("✨  Attachments are auto-ready — position is set by the Receiver's sockets");
         GUILayout.Space(4);
         WB_LabelDim("Right-click any asset to view its data.");
         WB_EndBlock();
@@ -232,20 +231,14 @@ public class WeaponWindowTool : EditorWindow
 
     private void DrawCalibrationUI()
     {
-        // ── Mode title ────────────────────────────────────────────────────────
         WB_ModeTitle("CALIBRATION MODE");
-
-        // ── Info block ────────────────────────────────────────────────────────
         WB_BeginBlock();
         WB_LabelDim($"Target:  {currentTargetObject?.name}");
         WB_LabelDim("Move (W) / Rotate (E) to align with the socket dummies.");
         WB_EndBlock();
-
         GUILayout.Space(6);
-
         bool newState = EditorGUILayout.ToggleLeft("  Show 3D Visual Assist", showCalibrationAssist);
         if (newState != showCalibrationAssist) { showCalibrationAssist = newState; SceneView.RepaintAll(); }
-
         GUILayout.Space(12);
         WB_ButtonSuccess("Complete Alignment", 44, () => { CompleteCalibration(); GUIUtility.ExitGUI(); });
         GUILayout.Space(4);
@@ -254,16 +247,12 @@ public class WeaponWindowTool : EditorWindow
 
     private void DrawEquipUI()
     {
-        // ── Mode title ────────────────────────────────────────────────────────
         WB_ModeTitle("ASSEMBLY MODE");
-
-        // ── Current loadout ───────────────────────────────────────────────────
         WB_SectionLabel("Current Loadout");
         WB_BeginBlock();
         EditorGUI.BeginDisabledGroup(true);
         string[] labels = { "Receiver", "Muzzle", "Optic", "Stock", "Magazine" };
-        GUIStyle lbl = new GUIStyle(EditorStyles.miniLabel)
-        { normal = { textColor = C_TEXT_DIM }, fixedWidth = 72 };
+        GUIStyle lbl = new GUIStyle(EditorStyles.miniLabel) { normal = { textColor = C_TEXT_DIM }, fixedWidth = 72 };
         for (int i = 0; i < 5; i++)
         {
             GUILayout.BeginHorizontal();
@@ -273,10 +262,7 @@ public class WeaponWindowTool : EditorWindow
         }
         EditorGUI.EndDisabledGroup();
         WB_EndBlock();
-
-        // ── Combined stats ────────────────────────────────────────────────────
         DrawCombinedStats();
-
         GUILayout.Space(10);
         WB_ButtonPrimary("Randomize Full Weapon", 34, RandomizeEquipAssembly);
         GUILayout.Space(4);
@@ -285,9 +271,6 @@ public class WeaponWindowTool : EditorWindow
         WB_ButtonSecondary("Clear Workbench", 26, () => { ClearWorkbench(); GUIUtility.ExitGUI(); });
     }
 
-    // Realtime combined stats: gun body base + all attachment bonuses.
-    // Only shown when at least one stat is defined. Only shows stats that
-    // exist on the body or any attachment — total values only, no breakdown.
     private void DrawCombinedStats()
     {
         if (equipLoadout[0] == null) return;
@@ -298,18 +281,14 @@ public class WeaponWindowTool : EditorWindow
             if (equipLoadout[i] != null && attachDataMap.TryGetValue(equipLoadout[i], out var ad))
                 equippedData.Add(ad);
 
-        // Only show when at least one stat is defined anywhere in the loadout
         if (bodyData.stats.Count == 0 && equippedData.All(a => a.stats.Count == 0)) return;
 
         var stats = CompatibilityResolver.ComputeStats(bodyData, equippedData);
-
         GUILayout.Space(6);
         WB_SectionLabel("Stats");
         WB_BeginBlock();
 
-        // Show only stats that are defined by the body or any attachment
         bool Has(string k) => bodyData.HasStat(k) || equippedData.Any(a => a.HasStat(k));
-
         void Row(string label, string value)
         {
             EditorGUILayout.BeginHorizontal();
@@ -327,16 +306,11 @@ public class WeaponWindowTool : EditorWindow
         if (Has(StatKeys.Weight)) Row("Weight (kg)", stats.weight.ToString("F2"));
 
         if (stats.customFloat != null)
-            foreach (var kv in stats.customFloat)
-                Row(kv.Key, kv.Value.ToString("F2"));
-
+            foreach (var kv in stats.customFloat) Row(kv.Key, kv.Value.ToString("F2"));
         if (stats.customInt != null)
-            foreach (var kv in stats.customInt)
-                Row(kv.Key, kv.Value.ToString());
-
+            foreach (var kv in stats.customInt) Row(kv.Key, kv.Value.ToString());
         if (stats.customBool != null)
-            foreach (var kv in stats.customBool)
-                Row(kv.Key, kv.Value ? "True" : "False");
+            foreach (var kv in stats.customBool) Row(kv.Key, kv.Value ? "True" : "False");
 
         WB_EndBlock();
     }
@@ -345,23 +319,16 @@ public class WeaponWindowTool : EditorWindow
     {
         if (_selectedPrefab == null)
         {
-            // Must end the scroll view that DrawLeftWorkbench opened before
-            // switching mode, otherwise layout Begin/End counts will mismatch.
             GUILayout.EndScrollView();
             currentMode = WorkbenchMode.Idle;
-            GUILayout.EndVertical(); // close DrawLeftWorkbench's BeginVertical
+            GUILayout.EndVertical();
             GUIUtility.ExitGUI();
             return;
         }
-
-        // ── Mode title ────────────────────────────────────────────────────────
         WB_ModeTitle("DATA VIEW");
-
-        // ── Asset name ────────────────────────────────────────────────────────
         WB_BeginBlock();
         WB_LabelDim($"Asset:  {_selectedPrefab.name}");
         WB_EndBlock();
-
         GUILayout.Space(6);
         WB_ButtonSecondary("← Back", 26, () =>
         {
@@ -370,11 +337,9 @@ public class WeaponWindowTool : EditorWindow
             _selectedPrefab = null;
             GUIUtility.ExitGUI();
         });
-
         GUILayout.Space(8);
         EditorGUI.DrawRect(GUILayoutUtility.GetRect(0, 1), C_BORDER);
         GUILayout.Space(6);
-
         DrawDetailPanel(0);
     }
 
@@ -382,10 +347,7 @@ public class WeaponWindowTool : EditorWindow
     // Right panel
     // ─────────────────────────────────────────────────────────────────────────
 
-    private void DrawRightPanel(float width)
-    {
-        DrawRightLibrary(width);
-    }
+    private void DrawRightPanel(float width) { DrawRightLibrary(width); }
 
     private void DrawRightLibrary(float width)
     {
@@ -403,7 +365,6 @@ public class WeaponWindowTool : EditorWindow
             cur += bw + 4f;
         }
         GUILayout.EndHorizontal();
-
         GUILayout.Space(10);
         DrawAssetList(width);
         GUILayout.EndVertical();
@@ -416,7 +377,6 @@ public class WeaponWindowTool : EditorWindow
     private void DrawDetailPanel(float width)
     {
         if (_selectedPrefab == null) return;
-
         if (bodyDataMap.TryGetValue(_selectedPrefab, out var bodyData))
             DrawBodyDataDetail(bodyData);
         else if (attachDataMap.TryGetValue(_selectedPrefab, out var attData))
@@ -432,8 +392,7 @@ public class WeaponWindowTool : EditorWindow
 
         DrawSectionHeader("Compatibility Tags");
         WB_BeginBlock();
-        if (data.tags.Count == 0)
-            WB_InfoBox("No tags — default body, accepts any attachment.");
+        if (data.tags.Count == 0) WB_InfoBox("No tags — default body, accepts any attachment.");
         DrawTagEditor(data);
         WB_EndBlock();
         GUILayout.Space(6);
@@ -448,17 +407,12 @@ public class WeaponWindowTool : EditorWindow
         {
             if (col == 2) { GUILayout.EndHorizontal(); GUILayout.BeginHorizontal(); col = 0; }
             bool has = data.slots.Any(s => s.slotType == type);
-
-            // Active slots: cyber green bg + dark text. Inactive: default.
             if (has) GUI.backgroundColor = C_ACCENT;
             GUIStyle slotStyle = new GUIStyle(EditorStyles.miniButton);
             if (has) slotStyle.normal.textColor = C_BG_BLOCK;
             slotStyle.fontStyle = has ? FontStyle.Bold : FontStyle.Normal;
-
-            bool newVal = GUILayout.Toggle(has, type.ToString(), slotStyle,
-                              GUILayout.Width(120), GUILayout.Height(22));
+            bool newVal = GUILayout.Toggle(has, type.ToString(), slotStyle, GUILayout.Width(120), GUILayout.Height(22));
             GUI.backgroundColor = Color.white;
-
             if (newVal != has)
             {
                 if (newVal) data.slots.Add(new SlotData { slotType = type });
@@ -487,8 +441,7 @@ public class WeaponWindowTool : EditorWindow
                 if (data.mediaData == null)
                 {
                     data.mediaData = ScriptableObject.CreateInstance<GunAssemblyTool.GunMediaData>();
-                    string path = AssetDatabase.GenerateUniqueAssetPath(
-                        $"{GUNBODY_PATH}/{data.displayName}_Media.asset");
+                    string path = AssetDatabase.GenerateUniqueAssetPath($"{GUNBODY_PATH}/{data.displayName}_Media.asset");
                     AssetDatabase.CreateAsset(data.mediaData, path);
                     AssetDatabase.SaveAssets();
                     EditorUtility.SetDirty(data);
@@ -514,8 +467,7 @@ public class WeaponWindowTool : EditorWindow
 
         DrawSectionHeader("Required Tags  (OR)");
         WB_BeginBlock();
-        if (data.requiredTags.Count == 0)
-            WB_InfoBox("No required tags — matches any gun body.");
+        if (data.requiredTags.Count == 0) WB_InfoBox("No required tags — matches any gun body.");
         DrawTagList(data.requiredTags, allTags, new Color(0.3f, 0.8f, 0.4f), ref _reqTagIdx, data);
         WB_EndBlock();
         GUILayout.Space(6);
@@ -540,7 +492,6 @@ public class WeaponWindowTool : EditorWindow
             WB_EndBlock();
         }
         if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(data);
-
         GUILayout.Space(6);
 
         DrawSectionHeader("Media Override");
@@ -552,8 +503,7 @@ public class WeaponWindowTool : EditorWindow
                 if (data.mediaOverride == null)
                 {
                     data.mediaOverride = ScriptableObject.CreateInstance<GunAssemblyTool.GunMediaData>();
-                    string path = AssetDatabase.GenerateUniqueAssetPath(
-                        $"{ATTACHMENT_PATH}/{data.displayName}_Media.asset");
+                    string path = AssetDatabase.GenerateUniqueAssetPath($"{ATTACHMENT_PATH}/{data.displayName}_Media.asset");
                     AssetDatabase.CreateAsset(data.mediaOverride, path);
                     AssetDatabase.SaveAssets();
                     EditorUtility.SetDirty(data);
@@ -581,8 +531,7 @@ public class WeaponWindowTool : EditorWindow
         if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(media);
     }
 
-    private void DrawSimpleAssetList<T>(string label,
-        System.Collections.Generic.List<T> list) where T : UnityEngine.Object
+    private void DrawSimpleAssetList<T>(string label, List<T> list) where T : UnityEngine.Object
     {
         GUILayout.Label(label, EditorStyles.miniBoldLabel);
         int removeIdx = -1;
@@ -616,49 +565,35 @@ public class WeaponWindowTool : EditorWindow
         GUILayout.Space(2);
     }
 
-    // ── Workbench UI helpers ──────────────────────────────────────────────────
+    // ── UI helpers ────────────────────────────────────────────────────────────
 
-    // Gold mode title bar
     private void WB_ModeTitle(string text)
     {
         Rect r = GUILayoutUtility.GetRect(0, 28);
         EditorGUI.DrawRect(r, C_ACCENT_DIM);
         GUIStyle s = new GUIStyle(EditorStyles.boldLabel)
-        {
-            fontSize = 11,
-            alignment = TextAnchor.MiddleLeft,
-            normal = { textColor = Color.white }
-        };
+        { fontSize = 11, alignment = TextAnchor.MiddleLeft, normal = { textColor = Color.white } };
         GUI.Label(new Rect(r.x + 10, r.y, r.width, r.height), text, s);
         GUILayout.Space(6);
     }
 
-    // Section sub-label (white, smaller)
     private void WB_SectionLabel(string text)
     {
-        GUIStyle s = new GUIStyle(EditorStyles.boldLabel)
-        { normal = { textColor = C_TEXT_MAIN }, fontSize = 11 };
+        GUIStyle s = new GUIStyle(EditorStyles.boldLabel) { normal = { textColor = C_TEXT_MAIN }, fontSize = 11 };
         GUILayout.Label(text, s);
     }
 
-    // Dim label (grey)
     private void WB_LabelDim(string text)
     {
-        GUIStyle s = new GUIStyle(EditorStyles.miniLabel)
-        { normal = { textColor = C_TEXT_DIM }, wordWrap = true };
+        GUIStyle s = new GUIStyle(EditorStyles.miniLabel) { normal = { textColor = C_TEXT_DIM }, wordWrap = true };
         GUILayout.Label(text, s);
     }
 
-    // Info hint box (no icon, thin border)
     private void WB_InfoBox(string text)
     {
         GUILayout.Space(2);
         GUIStyle s = new GUIStyle(EditorStyles.miniLabel)
-        {
-            wordWrap = true,
-            normal = { textColor = C_TEXT_DIM },
-            padding = new RectOffset(6, 6, 4, 4)
-        };
+        { wordWrap = true, normal = { textColor = C_TEXT_DIM }, padding = new RectOffset(6, 6, 4, 4) };
         float h = s.CalcHeight(new GUIContent(text), EditorGUIUtility.currentViewWidth - 20) + 8;
         Rect r = GUILayoutUtility.GetRect(0, h);
         EditorGUI.DrawRect(r, C_BG_BLOCK);
@@ -670,28 +605,20 @@ public class WeaponWindowTool : EditorWindow
         GUILayout.Space(2);
     }
 
-    // Asset title header: name (white large) + type badge (gold small)
     private void WB_AssetTitle(string name, string badge)
     {
         Rect r = GUILayoutUtility.GetRect(0, 38);
         EditorGUI.DrawRect(r, C_BG_BLOCK);
         EditorGUI.DrawRect(new Rect(r.x, r.yMax - 1, r.width, 1), C_BORDER);
-
         GUIStyle ts = new GUIStyle(EditorStyles.boldLabel)
-        {
-            fontSize = 13,
-            normal = { textColor = C_TEXT_MAIN },
-            alignment = TextAnchor.MiddleLeft
-        };
+        { fontSize = 13, normal = { textColor = C_TEXT_MAIN }, alignment = TextAnchor.MiddleLeft };
         GUIStyle bs = new GUIStyle(EditorStyles.miniLabel)
         { normal = { textColor = C_ACCENT }, alignment = TextAnchor.MiddleRight };
-
         GUI.Label(new Rect(r.x + 8, r.y, r.width * 0.7f, r.height), name, ts);
         GUI.Label(new Rect(r.x, r.y, r.width - 8, r.height), badge, bs);
         GUILayout.Space(2);
     }
 
-    // Thin-border content block
     private void WB_BeginBlock()
     {
         GUILayout.Space(2);
@@ -711,27 +638,22 @@ public class WeaponWindowTool : EditorWindow
         GUILayout.Space(2);
     }
 
-    // Gold primary button
     private void WB_ButtonPrimary(string label, float height, System.Action onClick)
     {
         GUI.backgroundColor = C_ACCENT_DIM;
-        GUIStyle s = new GUIStyle(GUI.skin.button)
-        { fontStyle = FontStyle.Bold, normal = { textColor = Color.white } };
+        GUIStyle s = new GUIStyle(GUI.skin.button) { fontStyle = FontStyle.Bold, normal = { textColor = Color.white } };
         if (GUILayout.Button(label, s, GUILayout.Height(height))) onClick?.Invoke();
         GUI.backgroundColor = Color.white;
     }
 
-    // Green success button (Complete / Save)
     private void WB_ButtonSuccess(string label, float height, System.Action onClick)
     {
         GUI.backgroundColor = C_SUCCESS;
-        GUIStyle s = new GUIStyle(GUI.skin.button)
-        { fontStyle = FontStyle.Bold, normal = { textColor = Color.white } };
+        GUIStyle s = new GUIStyle(GUI.skin.button) { fontStyle = FontStyle.Bold, normal = { textColor = Color.white } };
         if (GUILayout.Button(label, s, GUILayout.Height(height))) onClick?.Invoke();
         GUI.backgroundColor = Color.white;
     }
 
-    // Dark secondary button
     private void WB_ButtonSecondary(string label, float height, System.Action onClick)
     {
         GUI.backgroundColor = new Color(0.28f, 0.28f, 0.28f);
@@ -739,22 +661,18 @@ public class WeaponWindowTool : EditorWindow
         GUI.backgroundColor = Color.white;
     }
 
-    // Small accent button (inline, e.g. + Add Media)
     private void WB_ButtonAccentSmall(string label, System.Action onClick)
     {
         GUI.backgroundColor = C_ACCENT_DIM;
-        GUIStyle s = new GUIStyle(EditorStyles.miniButton)
-        { normal = { textColor = Color.white }, fontStyle = FontStyle.Bold };
+        GUIStyle s = new GUIStyle(EditorStyles.miniButton) { normal = { textColor = Color.white }, fontStyle = FontStyle.Bold };
         if (GUILayout.Button(label, s, GUILayout.Height(22))) onClick?.Invoke();
         GUI.backgroundColor = Color.white;
     }
 
-    // Red danger button (- Remove)
     private void WB_ButtonDanger(string label, System.Action onClick)
     {
         GUI.backgroundColor = C_DANGER;
-        GUIStyle s = new GUIStyle(EditorStyles.miniButton)
-        { normal = { textColor = new Color(1f, 0.7f, 0.7f) } };
+        GUIStyle s = new GUIStyle(EditorStyles.miniButton) { normal = { textColor = new Color(1f, 0.7f, 0.7f) } };
         if (GUILayout.Button(label, s, GUILayout.Height(22))) onClick?.Invoke();
         GUI.backgroundColor = Color.white;
     }
@@ -775,8 +693,7 @@ public class WeaponWindowTool : EditorWindow
     }
 
     private void DrawTagList(List<string> tagList, string[] allTags,
-                             Color pillColor, ref int idxRef,
-                             UnityEngine.Object owner = null)
+                             Color pillColor, ref int idxRef, UnityEngine.Object owner = null)
     {
         var toRemove = new List<string>();
         GUILayout.BeginHorizontal();
@@ -786,18 +703,12 @@ public class WeaponWindowTool : EditorWindow
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
             GUILayout.Label(t, EditorStyles.miniLabel);
             GUI.backgroundColor = Color.white;
-            if (GUILayout.Button("×", EditorStyles.miniLabel, GUILayout.Width(14)))
-                toRemove.Add(t);
+            if (GUILayout.Button("×", EditorStyles.miniLabel, GUILayout.Width(14))) toRemove.Add(t);
             GUILayout.EndHorizontal();
         }
         GUI.backgroundColor = Color.white;
         GUILayout.EndHorizontal();
-
-        if (toRemove.Count > 0)
-        {
-            tagList.RemoveAll(t => toRemove.Contains(t));
-            if (owner != null) EditorUtility.SetDirty(owner);
-        }
+        if (toRemove.Count > 0) { tagList.RemoveAll(t => toRemove.Contains(t)); if (owner != null) EditorUtility.SetDirty(owner); }
 
         var available = allTags.Where(t => !tagList.Contains(t)).ToArray();
         if (available.Length > 0)
@@ -806,16 +717,10 @@ public class WeaponWindowTool : EditorWindow
             idxRef = Mathf.Clamp(idxRef, 0, available.Length - 1);
             idxRef = EditorGUILayout.Popup(idxRef, available, GUILayout.Width(120));
             if (GUILayout.Button("+ Add", EditorStyles.miniButton, GUILayout.Width(50)))
-            {
-                tagList.Add(available[idxRef]);
-                if (owner != null) EditorUtility.SetDirty(owner);
-            }
+            { tagList.Add(available[idxRef]); if (owner != null) EditorUtility.SetDirty(owner); }
             GUILayout.EndHorizontal();
         }
-        else
-        {
-            EditorGUILayout.LabelField("All tags added.", EditorStyles.centeredGreyMiniLabel);
-        }
+        else EditorGUILayout.LabelField("All tags added.", EditorStyles.centeredGreyMiniLabel);
     }
 
     private void DrawTagEditor(GunBodyData data)
@@ -853,21 +758,18 @@ public class WeaponWindowTool : EditorWindow
         var key = "WT_CustomTag_Body";
         string custom = EditorGUILayout.TextField(EditorPrefs.GetString(key, ""), GUILayout.Width(100));
         EditorPrefs.SetString(key, custom);
-        if (GUILayout.Button("+ Custom", EditorStyles.miniButton, GUILayout.Width(60)) &&
-            !string.IsNullOrWhiteSpace(custom))
+        if (GUILayout.Button("+ Custom", EditorStyles.miniButton, GUILayout.Width(60)) && !string.IsNullOrWhiteSpace(custom))
         {
             string norm = custom.Trim().ToLowerInvariant();
             if (!data.tags.Contains(norm))
             {
                 data.tags.Add(norm);
-                if (_tagDefs != null && !_tagDefs.IsValid(norm))
-                { _tagDefs.tags.Add(norm); EditorUtility.SetDirty(_tagDefs); }
+                if (_tagDefs != null && !_tagDefs.IsValid(norm)) { _tagDefs.tags.Add(norm); EditorUtility.SetDirty(_tagDefs); }
                 changed = true;
             }
             EditorPrefs.SetString(key, "");
         }
         GUILayout.EndHorizontal();
-
         if (changed) EditorUtility.SetDirty(data);
     }
 
@@ -887,30 +789,19 @@ public class WeaponWindowTool : EditorWindow
     private void SaveCustomStatKey(string key)
     {
         var keys = LoadCustomStatKeys();
-        if (!keys.Contains(key))
-        {
-            keys.Add(key);
-            EditorPrefs.SetString(CUSTOM_STATS_PREF, string.Join(",", keys));
-        }
+        if (!keys.Contains(key)) { keys.Add(key); EditorPrefs.SetString(CUSTOM_STATS_PREF, string.Join(",", keys)); }
     }
 
     private void RemoveCustomStatKey(string key)
     {
         var keys = LoadCustomStatKeys();
-        if (keys.Remove(key))
-            EditorPrefs.SetString(CUSTOM_STATS_PREF, string.Join(",", keys));
+        if (keys.Remove(key)) EditorPrefs.SetString(CUSTOM_STATS_PREF, string.Join(",", keys));
     }
 
     private void DrawStatList(List<GunAssemblyTool.StatEntry> statList, UnityEngine.Object owner)
     {
-        _statFoldout = EditorGUILayout.Foldout(
-            _statFoldout,
-            $"Stats  ({statList.Count})",
-            true,
-            EditorStyles.foldoutHeader);
-
+        _statFoldout = EditorGUILayout.Foldout(_statFoldout, $"Stats  ({statList.Count})", true, EditorStyles.foldoutHeader);
         if (!_statFoldout) return;
-
         EditorGUI.indentLevel++;
 
         if (statList.Count == 0)
@@ -924,63 +815,30 @@ public class WeaponWindowTool : EditorWindow
             {
                 var entry = statList[i];
                 GUILayout.BeginHorizontal();
-
-                // Key label — fixed width so columns stay aligned
                 GUILayout.Label(entry.key, GUILayout.Width(90));
-
-                // Type selector
                 EditorGUI.BeginChangeCheck();
-                var newType = (GunAssemblyTool.StatValueType)EditorGUILayout.EnumPopup(
-                    entry.valueType, GUILayout.Width(64));
-                if (EditorGUI.EndChangeCheck())
-                {
-                    entry.valueType = newType;
-                    EditorUtility.SetDirty(owner);
-                    _statSaved = false;
-                }
-
-                // Value field — all cases use fixed width so the ✕ button
-                // always stays visible regardless of window size.
+                var newType = (GunAssemblyTool.StatValueType)EditorGUILayout.EnumPopup(entry.valueType, GUILayout.Width(64));
+                if (EditorGUI.EndChangeCheck()) { entry.valueType = newType; EditorUtility.SetDirty(owner); _statSaved = false; }
                 EditorGUI.BeginChangeCheck();
                 switch (entry.valueType)
                 {
                     case GunAssemblyTool.StatValueType.Float:
-                        entry.floatValue = EditorGUILayout.FloatField(
-                            entry.floatValue, GUILayout.Width(80));
-                        break;
+                        entry.floatValue = EditorGUILayout.FloatField(entry.floatValue, GUILayout.Width(80)); break;
                     case GunAssemblyTool.StatValueType.Int:
-                        entry.intValue = EditorGUILayout.IntField(
-                            entry.intValue, GUILayout.Width(80));
-                        break;
+                        entry.intValue = EditorGUILayout.IntField(entry.intValue, GUILayout.Width(80)); break;
                     case GunAssemblyTool.StatValueType.Bool:
-                        GUIStyle boolLbl = new GUIStyle(EditorStyles.miniLabel)
-                        { normal = { textColor = C_TEXT_DIM } };
+                        GUIStyle boolLbl = new GUIStyle(EditorStyles.miniLabel) { normal = { textColor = C_TEXT_DIM } };
                         GUILayout.Space(14);
-                        GUILayout.Label(
-                            entry.boolValue ? "True" : "False",
-                            boolLbl, GUILayout.Width(30));
-                        entry.boolValue = EditorGUILayout.Toggle(
-                            entry.boolValue, GUILayout.Width(33));
-                        break;
+                        GUILayout.Label(entry.boolValue ? "True" : "False", boolLbl, GUILayout.Width(30));
+                        entry.boolValue = EditorGUILayout.Toggle(entry.boolValue, GUILayout.Width(33)); break;
                 }
-                if (EditorGUI.EndChangeCheck())
-                {
-                    EditorUtility.SetDirty(owner);
-                    _statSaved = false;
-                }
-
+                if (EditorGUI.EndChangeCheck()) { EditorUtility.SetDirty(owner); _statSaved = false; }
                 GUI.color = new Color(1f, 0.5f, 0.5f);
                 if (GUILayout.Button("✕", GUILayout.Width(22))) removeIdx = i;
                 GUI.color = Color.white;
-
                 GUILayout.EndHorizontal();
             }
-            if (removeIdx >= 0)
-            {
-                statList.RemoveAt(removeIdx);
-                EditorUtility.SetDirty(owner);
-                _statSaved = false;
-            }
+            if (removeIdx >= 0) { statList.RemoveAt(removeIdx); EditorUtility.SetDirty(owner); _statSaved = false; }
         }
 
         GUILayout.Space(4);
@@ -988,13 +846,9 @@ public class WeaponWindowTool : EditorWindow
 
         var existingKeys = new HashSet<string>(statList.Select(s => s.key));
         var customKeys = LoadCustomStatKeys();
-        var allDropdown = GunAssemblyTool.StatKeys.Presets
-            .Concat(customKeys)
-            .Distinct()
-            .Where(k => !existingKeys.Contains(k))
-            .ToArray();
+        var allDropdown = GunAssemblyTool.StatKeys.Presets.Concat(customKeys).Distinct()
+            .Where(k => !existingKeys.Contains(k)).ToArray();
 
-        // ── Add from dropdown ────────────────────────────────────────────────
         if (allDropdown.Length > 0)
         {
             GUILayout.BeginHorizontal();
@@ -1002,98 +856,65 @@ public class WeaponWindowTool : EditorWindow
             _presetStatIdx = EditorGUILayout.Popup(_presetStatIdx, allDropdown, GUILayout.Width(110));
             if (GUILayout.Button("+ Add", EditorStyles.miniButton, GUILayout.Width(50)))
             {
-                // Use Float as default for preset stats
                 statList.Add(new GunAssemblyTool.StatEntry(allDropdown[_presetStatIdx], 0f));
-                _presetStatIdx = 0;
-                EditorUtility.SetDirty(owner);
-                _statSaved = false;
+                _presetStatIdx = 0; EditorUtility.SetDirty(owner); _statSaved = false;
             }
             GUILayout.EndHorizontal();
         }
-        else
-        {
-            EditorGUILayout.LabelField("All stats added.", EditorStyles.centeredGreyMiniLabel);
-        }
+        else EditorGUILayout.LabelField("All stats added.", EditorStyles.centeredGreyMiniLabel);
 
         GUILayout.Space(4);
-
-        // ── Add custom key — user picks type BEFORE clicking + Custom ────────
         GUILayout.BeginHorizontal();
         _customStatKey = EditorGUILayout.TextField(_customStatKey, GUILayout.Width(100));
-        _customStatType = (GunAssemblyTool.StatValueType)EditorGUILayout.EnumPopup(
-            _customStatType, GUILayout.Width(64));
-        if (GUILayout.Button("+ Custom", EditorStyles.miniButton, GUILayout.Width(66)) &&
-            !string.IsNullOrWhiteSpace(_customStatKey))
+        _customStatType = (GunAssemblyTool.StatValueType)EditorGUILayout.EnumPopup(_customStatType, GUILayout.Width(64));
+        if (GUILayout.Button("+ Custom", EditorStyles.miniButton, GUILayout.Width(66)) && !string.IsNullOrWhiteSpace(_customStatKey))
         {
             string norm = _customStatKey.Trim();
             if (!existingKeys.Contains(norm))
             {
-                // Create entry with the selected type
                 var newEntry = new GunAssemblyTool.StatEntry();
-                newEntry.key = norm;
-                newEntry.valueType = _customStatType;
-                statList.Add(newEntry);
-                SaveCustomStatKey(norm);
-                EditorUtility.SetDirty(owner);
-                _statSaved = false;
+                newEntry.key = norm; newEntry.valueType = _customStatType;
+                statList.Add(newEntry); SaveCustomStatKey(norm);
+                EditorUtility.SetDirty(owner); _statSaved = false;
             }
             _customStatKey = "";
         }
         GUILayout.EndHorizontal();
 
-        // ── Manage saved custom keys ─────────────────────────────────────────
         if (customKeys.Count > 0)
         {
             GUILayout.Space(4);
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
-            _manageCustomKeys = EditorGUILayout.Foldout(
-                _manageCustomKeys,
-                $"Manage custom keys  ({customKeys.Count})",
-                true);
-
+            _manageCustomKeys = EditorGUILayout.Foldout(_manageCustomKeys, $"Manage custom keys  ({customKeys.Count})", true);
             if (_manageCustomKeys)
             {
                 string toRemove = null;
                 foreach (var ck in customKeys)
                 {
-                    // Use GUILayout.Space to indent manually — indent level
-                    // does not affect horizontal groups reliably.
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(16);
                     GUILayout.Label(ck, EditorStyles.miniLabel, GUILayout.Width(120));
                     GUI.color = new Color(1f, 0.5f, 0.5f);
-                    if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(20)))
-                        toRemove = ck;
+                    if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(20))) toRemove = ck;
                     GUI.color = Color.white;
                     GUILayout.EndHorizontal();
                 }
                 if (toRemove != null)
                 {
-                    RemoveCustomStatKey(toRemove);
-                    _presetStatIdx = 0;
-                    if (statList.RemoveAll(s => s.key == toRemove) > 0)
-                        EditorUtility.SetDirty(owner);
+                    RemoveCustomStatKey(toRemove); _presetStatIdx = 0;
+                    if (statList.RemoveAll(s => s.key == toRemove) > 0) EditorUtility.SetDirty(owner);
                 }
             }
         }
 
-        // Save button — only shown when there are stats to save
         if (statList.Count > 0)
         {
             GUILayout.Space(4);
-            GUI.backgroundColor = _statSaved
-                ? new Color(0.3f, 0.6f, 0.3f)
-                : new Color(0.2f, 0.5f, 0.9f);
+            GUI.backgroundColor = _statSaved ? new Color(0.3f, 0.6f, 0.3f) : new Color(0.2f, 0.5f, 0.9f);
             if (GUILayout.Button(_statSaved ? "✔ Saved" : "💾 Save Stats", GUILayout.Height(24)))
-            {
-                EditorUtility.SetDirty(owner);
-                AssetDatabase.SaveAssets();
-                _statSaved = true;
-            }
+            { EditorUtility.SetDirty(owner); AssetDatabase.SaveAssets(); _statSaved = true; }
             GUI.backgroundColor = Color.white;
         }
-
         EditorGUI.indentLevel--;
     }
 
@@ -1152,10 +973,8 @@ public class WeaponWindowTool : EditorWindow
                 Handles.BeginGUI();
                 Handles.color = new Color(0.9f, 0.9f, 0.9f, 1f);
                 Handles.DrawAAPolyLine(4f,
-                    new Vector3(cardRect.x, cardRect.y),
-                    new Vector3(cardRect.xMax, cardRect.y),
-                    new Vector3(cardRect.xMax, cardRect.yMax),
-                    new Vector3(cardRect.x, cardRect.yMax),
+                    new Vector3(cardRect.x, cardRect.y), new Vector3(cardRect.xMax, cardRect.y),
+                    new Vector3(cardRect.xMax, cardRect.yMax), new Vector3(cardRect.x, cardRect.yMax),
                     new Vector3(cardRect.x, cardRect.y));
                 Handles.EndGUI();
             }
@@ -1164,10 +983,8 @@ public class WeaponWindowTool : EditorWindow
                 Handles.BeginGUI();
                 Handles.color = new Color(1f, 1f, 1f, 0.15f);
                 Handles.DrawAAPolyLine(2f,
-                    new Vector3(buttonRect.x - 2, buttonRect.y - 2),
-                    new Vector3(buttonRect.xMax + 2, buttonRect.y - 2),
-                    new Vector3(buttonRect.xMax + 2, buttonRect.yMax + 2),
-                    new Vector3(buttonRect.x - 2, buttonRect.yMax + 2),
+                    new Vector3(buttonRect.x - 2, buttonRect.y - 2), new Vector3(buttonRect.xMax + 2, buttonRect.y - 2),
+                    new Vector3(buttonRect.xMax + 2, buttonRect.yMax + 2), new Vector3(buttonRect.x - 2, buttonRect.yMax + 2),
                     new Vector3(buttonRect.x - 2, buttonRect.y - 2));
                 Handles.EndGUI();
             }
@@ -1182,46 +999,23 @@ public class WeaponWindowTool : EditorWindow
                     menu.AddItem(new GUIContent("🔧 Equip Part"), false, () => EnterEquipMode(menuObj, menuTab));
                 menu.AddItem(new GUIContent("📋 View Data"), false, () =>
                 {
-                    _selectedPrefab = menuObj;
-                    currentMode = WorkbenchMode.ViewData;
+                    _selectedPrefab = menuObj; currentMode = WorkbenchMode.ViewData;
                 });
                 menu.AddItem(new GUIContent("📐 (Re)Calibrate"), false, () => EnterCalibrationMode(menuObj, menuTab));
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent("🗑️ Remove"), false, () =>
                 {
                     if (menuTab == 0 && bodyDataMap.TryGetValue(menuObj, out var bd))
-                    {
-                        string bdPath = AssetDatabase.GetAssetPath(bd);
-                        if (!string.IsNullOrEmpty(bdPath)) AssetDatabase.DeleteAsset(bdPath);
-                    }
+                    { string bdPath = AssetDatabase.GetAssetPath(bd); if (!string.IsNullOrEmpty(bdPath)) AssetDatabase.DeleteAsset(bdPath); }
                     else if (menuTab > 0 && attachDataMap.TryGetValue(menuObj, out var ad))
-                    {
-                        string adPath = AssetDatabase.GetAssetPath(ad);
-                        if (!string.IsNullOrEmpty(adPath)) AssetDatabase.DeleteAsset(adPath);
-                    }
+                    { string adPath = AssetDatabase.GetAssetPath(ad); if (!string.IsNullOrEmpty(adPath)) AssetDatabase.DeleteAsset(adPath); }
                     assetLibrary[menuTab].Remove(menuObj);
                     calibrationStatus.Remove(menuObj);
                     bodyDataMap.Remove(menuObj);
                     attachDataMap.Remove(menuObj);
-
-                    // If the removed prefab was being viewed in ViewData mode,
-                    // null _selectedPrefab and switch mode BEFORE saving so the
-                    // next repaint does not try to draw data for a deleted object.
-                    bool wasViewing = (_selectedPrefab == menuObj &&
-                                       currentMode == WorkbenchMode.ViewData);
-                    if (_selectedPrefab == menuObj)
-                    {
-                        _selectedPrefab = null;
-                        currentMode = WorkbenchMode.Idle;
-                    }
-
-                    SaveLibrary();
-                    RefreshRegistry();
-                    AssetDatabase.Refresh();
-
-                    // ExitGUI stops the current frame immediately so the layout
-                    // state from the ScrollView in ViewData mode is not re-entered
-                    // in the same frame with a different mode already set.
+                    bool wasViewing = (_selectedPrefab == menuObj && currentMode == WorkbenchMode.ViewData);
+                    if (_selectedPrefab == menuObj) { _selectedPrefab = null; currentMode = WorkbenchMode.Idle; }
+                    SaveLibrary(); RefreshRegistry(); AssetDatabase.Refresh();
                     if (wasViewing) GUIUtility.ExitGUI();
                 });
                 menu.ShowAsContext();
@@ -1230,17 +1024,27 @@ public class WeaponWindowTool : EditorWindow
             // Double-click
             else if (e.type == EventType.MouseDown && e.button == 0 && e.clickCount == 2 && buttonRect.Contains(e.mousePosition))
             {
-                if (isCalibrated) EnterEquipMode(obj, selectedTab);
-                else EnterCalibrationMode(obj, selectedTab);
+                if (selectedTab == 0)
+                {
+                    // Receiver: must be calibrated (has sockets) before equipping
+                    if (isCalibrated) EnterEquipMode(obj, selectedTab);
+                    else EnterCalibrationMode(obj, selectedTab);
+                }
+                else
+                {
+                    // Attachment: never needs manual calibration.
+                    // Position on the gun is determined by the Receiver's socket transforms.
+                    // Mark ready if not already, then go straight to equip.
+                    if (!isCalibrated) MarkAttachmentReady(obj, selectedTab);
+                    EnterEquipMode(obj, selectedTab);
+                }
                 e.Use();
             }
             // Single-click
             else if (e.type == EventType.MouseDown && e.button == 0 && e.clickCount == 1 && buttonRect.Contains(e.mousePosition))
             {
-                if (currentMode == WorkbenchMode.ViewData)
-                    _selectedPrefab = obj;
-                else
-                    _selectedPrefab = (_selectedPrefab == obj) ? null : obj;
+                if (currentMode == WorkbenchMode.ViewData) _selectedPrefab = obj;
+                else _selectedPrefab = (_selectedPrefab == obj) ? null : obj;
                 e.Use();
                 Repaint();
             }
@@ -1255,7 +1059,6 @@ public class WeaponWindowTool : EditorWindow
             GUIStyle labelSt = new GUIStyle(EditorStyles.miniLabel)
             { alignment = TextAnchor.UpperCenter, clipping = TextClipping.Clip };
             GUILayout.Label(obj.name, labelSt, GUILayout.Width(iconSize));
-
             GUILayout.Space(6);
             GUILayout.EndVertical();
         }
@@ -1277,14 +1080,11 @@ public class WeaponWindowTool : EditorWindow
         {
             if (!(o is GameObject go)) return false;
             string path = AssetDatabase.GetAssetPath(go).ToLower();
-            bool isPrefab = PrefabUtility.IsPartOfPrefabAsset(go) ||
-                            path.EndsWith(".fbx") || path.EndsWith(".obj");
+            bool isPrefab = PrefabUtility.IsPartOfPrefabAsset(go) || path.EndsWith(".fbx") || path.EndsWith(".obj");
             return isPrefab && MatchesTabKeywords(go.name, selectedTab);
         });
 
-        DragAndDrop.visualMode = anyValid
-            ? DragAndDropVisualMode.Copy
-            : DragAndDropVisualMode.Rejected;
+        DragAndDrop.visualMode = anyValid ? DragAndDropVisualMode.Copy : DragAndDropVisualMode.Rejected;
 
         if (evt.type == EventType.DragPerform && anyValid)
         {
@@ -1296,30 +1096,28 @@ public class WeaponWindowTool : EditorWindow
             {
                 if (!(draggedObj is GameObject go)) continue;
                 string path = AssetDatabase.GetAssetPath(go).ToLower();
-                bool isPrefab = PrefabUtility.IsPartOfPrefabAsset(go) ||
-                                path.EndsWith(".fbx") || path.EndsWith(".obj");
+                bool isPrefab = PrefabUtility.IsPartOfPrefabAsset(go) || path.EndsWith(".fbx") || path.EndsWith(".obj");
                 if (!isPrefab) continue;
-
-                if (!MatchesTabKeywords(go.name, selectedTab))
-                {
-                    rejected = true;
-                    continue;
-                }
-
+                if (!MatchesTabKeywords(go.name, selectedTab)) { rejected = true; continue; }
                 if (assetLibrary[selectedTab].Contains(go)) continue;
 
                 assetLibrary[selectedTab].Add(go);
-                calibrationStatus[go] = CheckIfCalibrated(go, selectedTab);
 
                 if (selectedTab == 0)
                 {
+                    // Receiver: check if sockets already baked in
                     AutoCreateGunBodyData(go);
+                    calibrationStatus[go] = CheckIfReceiverCalibrated(go);
                     if (WeaponToolSettingsWorkbench.autoAssignTags && bodyDataMap.TryGetValue(go, out var bodyData))
                         AutoAssignTagsFromName(go, bodyData.tags, bodyData);
                 }
                 else
                 {
+                    // Attachment: create data SO and immediately mark ready.
+                    // No calibration step needed — position comes from the
+                    // Receiver's socket transforms at assembly time.
                     AutoCreateAttachmentData(go, selectedTab);
+                    MarkAttachmentReady(go, selectedTab);
                     if (WeaponToolSettingsWorkbench.autoAssignTags && attachDataMap.TryGetValue(go, out var attData))
                         AutoAssignTagsFromName(go, attData.requiredTags, attData);
                 }
@@ -1328,15 +1126,36 @@ public class WeaponWindowTool : EditorWindow
             }
 
             if (rejected && !changed)
-                EditorUtility.DisplayDialog(
-                    "Wrong Tab",
+                EditorUtility.DisplayDialog("Wrong Tab",
                     $"The dragged prefab does not match the '{tabNames[selectedTab]}' tab.\n" +
-                    $"Expected name keywords: {string.Join(", ", TabKeywords[selectedTab] ?? new[] { "any" })}",
-                    "OK");
+                    $"Expected name keywords: {string.Join(", ", TabKeywords[selectedTab] ?? new[] { "any" })}", "OK");
 
-            if (changed) { SaveLibrary(); RefreshRegistry(); }
+            if (changed) { SaveLibrary(); RefreshRegistry(); Repaint(); }
         }
         evt.Use();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // MarkAttachmentReady — no file I/O, no prefab modification
+    // Attachments don't need geometric calibration: their position on the gun
+    // is fully determined by the Receiver's Socket_ child transforms, which
+    // RefreshEquipAssembly snaps them to via localPosition = zero.
+    // All this method does is flip the status flag and persist the GUID.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void MarkAttachmentReady(GameObject go, int tabIndex)
+    {
+        calibrationStatus[go] = true;
+
+        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(go));
+        if (!string.IsNullOrEmpty(guid))
+        {
+            var existing = new HashSet<string>(
+                EditorPrefs.GetString("WT_AssetLib_Calibrated", "")
+                           .Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries));
+            existing.Add(guid);
+            EditorPrefs.SetString("WT_AssetLib_Calibrated", string.Join(",", existing));
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -1375,7 +1194,6 @@ public class WeaponWindowTool : EditorWindow
     {
         int totalAssigned = 0;
 
-        // Tab 0 = Receivers (GunBodyData)
         foreach (var go in assetLibrary[0])
         {
             if (go == null) continue;
@@ -1383,7 +1201,6 @@ public class WeaponWindowTool : EditorWindow
                 totalAssigned += AutoAssignTagsFromName(go, bodyData.tags, bodyData);
         }
 
-        // Tabs 1+ = Attachments (AttachmentData.requiredTags)
         for (int tab = 1; tab < assetLibrary.Length; tab++)
         {
             foreach (var go in assetLibrary[tab])
@@ -1407,17 +1224,14 @@ public class WeaponWindowTool : EditorWindow
     private void AutoCreateGunBodyData(GameObject prefab)
     {
         if (bodyDataMap.ContainsKey(prefab)) return;
-
         var data = ScriptableObject.CreateInstance<GunBodyData>();
         data.bodyId = prefab.name.ToLowerInvariant().Replace(" ", "_");
         data.displayName = prefab.name;
         data.bodyPrefab = prefab;
         data.partObject = prefab;
-
         string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{GUNBODY_PATH}/{prefab.name}_Body.asset");
         AssetDatabase.CreateAsset(data, assetPath);
         AssetDatabase.SaveAssets();
-
         bodyDataMap[prefab] = data;
         Debug.Log($"[WeaponWorkbench] Created GunBodyData -> {assetPath}");
     }
@@ -1425,68 +1239,55 @@ public class WeaponWindowTool : EditorWindow
     private void SyncDataNames()
     {
         bool dirty = false;
-
         foreach (var kv in bodyDataMap)
         {
             if (kv.Key == null || kv.Value == null) continue;
             string prefabName = kv.Key.name;
             var data = kv.Value;
-
             if (data.displayName != prefabName)
             {
                 data.displayName = prefabName;
                 data.bodyId = prefabName.ToLowerInvariant().Replace(" ", "_");
                 EditorUtility.SetDirty(data);
-
                 string oldPath = AssetDatabase.GetAssetPath(data);
-                string newPath = System.IO.Path.GetDirectoryName(oldPath).Replace('\\', '/') +
-                                 "/" + prefabName + "_Body.asset";
+                string newPath = System.IO.Path.GetDirectoryName(oldPath).Replace('\\', '/') + "/" + prefabName + "_Body.asset";
                 newPath = AssetDatabase.GenerateUniqueAssetPath(newPath);
                 AssetDatabase.MoveAsset(oldPath, newPath);
                 dirty = true;
             }
         }
-
         foreach (var kv in attachDataMap)
         {
             if (kv.Key == null || kv.Value == null) continue;
             string prefabName = kv.Key.name;
             var data = kv.Value;
-
             if (data.displayName != prefabName)
             {
                 data.displayName = prefabName;
                 data.attachmentId = prefabName.ToLowerInvariant().Replace(" ", "_");
                 EditorUtility.SetDirty(data);
-
                 string oldPath = AssetDatabase.GetAssetPath(data);
-                string newPath = System.IO.Path.GetDirectoryName(oldPath).Replace('\\', '/') +
-                                 "/" + prefabName + "_" + data.attachType + ".asset";
+                string newPath = System.IO.Path.GetDirectoryName(oldPath).Replace('\\', '/') + "/" + prefabName + "_" + data.attachType + ".asset";
                 newPath = AssetDatabase.GenerateUniqueAssetPath(newPath);
                 AssetDatabase.MoveAsset(oldPath, newPath);
                 dirty = true;
             }
         }
-
         if (dirty) AssetDatabase.SaveAssets();
     }
 
     private void AutoCreateAttachmentData(GameObject prefab, int tabIndex)
     {
         if (attachDataMap.ContainsKey(prefab)) return;
-
         AttachmentType type = TabIndexToAttachmentType(tabIndex);
         AttachmentData data = CreateAttachmentDataOfType(type);
-
         data.attachmentId = prefab.name.ToLowerInvariant().Replace(" ", "_");
         data.displayName = prefab.name;
         data.attachType = type;
         data.attachmentPrefab = prefab;
-
         string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{ATTACHMENT_PATH}/{prefab.name}_{type}.asset");
         AssetDatabase.CreateAsset(data, assetPath);
         AssetDatabase.SaveAssets();
-
         attachDataMap[prefab] = data;
         Debug.Log($"[WeaponWorkbench] Created {type}Data -> {assetPath}");
     }
@@ -1519,17 +1320,16 @@ public class WeaponWindowTool : EditorWindow
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Calibration
+    // Calibration — Receiver only
     // ─────────────────────────────────────────────────────────────────────────
 
-    private bool CheckIfCalibrated(GameObject go, int tabIndex)
+    // Only checks Receivers. Attachments are always considered ready.
+    private bool CheckIfReceiverCalibrated(GameObject go)
     {
-        if (tabIndex == 0)
-            return go.transform.Find("Socket_Muzzle") != null &&
-                   go.transform.Find("Socket_Optic") != null &&
-                   go.transform.Find("Socket_Stock") != null &&
-                   go.transform.Find("Socket_Magazine") != null;
-        return go.GetComponent<MeshRenderer>() == null && go.transform.childCount > 0;
+        return go.transform.Find("Socket_Muzzle") != null &&
+               go.transform.Find("Socket_Optic") != null &&
+               go.transform.Find("Socket_Stock") != null &&
+               go.transform.Find("Socket_Magazine") != null;
     }
 
     private void EnterCalibrationMode(GameObject targetPrefab, int tabIndex)
@@ -1562,6 +1362,7 @@ public class WeaponWindowTool : EditorWindow
         }
         else
         {
+            // Attachment manual re-calibration (accessible via right-click → Re-Calibrate)
             SpawnDummy(WeaponToolSettingsWorkbench.dummyBody, "Body");
             string socketName = GetSocketNameForEquip(tabIndex);
             Transform targetSocket = currentDummies[0].transform.Find(socketName);
@@ -1643,15 +1444,10 @@ public class WeaponWindowTool : EditorWindow
                 socket = sObj.transform;
                 socket.SetParent(currentTargetObject.transform, true);
             }
-
             socket.position = kvp.Key.transform.position;
             socket.rotation = kvp.Key.transform.rotation;
-
-            Vector3 parentScale = currentTargetObject.transform.lossyScale;
-            socket.localScale = new Vector3(
-                1f / parentScale.x,
-                1f / parentScale.y,
-                1f / parentScale.z);
+            Vector3 ps = currentTargetObject.transform.lossyScale;
+            socket.localScale = new Vector3(1f / ps.x, 1f / ps.y, 1f / ps.z);
         }
         return true;
     }
@@ -1722,15 +1518,10 @@ public class WeaponWindowTool : EditorWindow
                     if (!silentClear)
                     {
                         Debug.LogWarning($"[WeaponWorkbench] '{equipLoadout[i].name}' rejected: {reason}");
-                        EditorUtility.DisplayDialog(
-                            "Incompatible Part",
-                            $"'{equipLoadout[i].name}' cannot be attached to '{equipLoadout[0].name}'.\n\n{reason}",
-                            "OK");
+                        EditorUtility.DisplayDialog("Incompatible Part",
+                            $"'{equipLoadout[i].name}' cannot be attached to '{equipLoadout[0].name}'.\n\n{reason}", "OK");
                     }
-                    else
-                    {
-                        Debug.Log($"[WeaponWorkbench] Cleared '{equipLoadout[i].name}' (incompatible with new body).");
-                    }
+                    else Debug.Log($"[WeaponWorkbench] Cleared '{equipLoadout[i].name}' (incompatible with new body).");
                     equipLoadout[i] = null;
                     continue;
                 }
@@ -1743,6 +1534,8 @@ public class WeaponWindowTool : EditorWindow
                 Transform socket = bodyInstance.transform.Find(socketName);
                 if (socket != null)
                 {
+                    // Attachment snaps to the socket — this is where position comes from.
+                    // No prior geometric calibration of the attachment prefab needed.
                     acc.transform.SetParent(socket, false);
                     acc.transform.localPosition = Vector3.zero;
                     acc.transform.localRotation = Quaternion.identity;
@@ -1767,7 +1560,6 @@ public class WeaponWindowTool : EditorWindow
     private void RandomizeEquipAssembly()
     {
         bool hasValidBody = false;
-
         for (int i = 0; i < 5; i++)
         {
             var validAssets = new List<GameObject>();
@@ -1775,7 +1567,6 @@ public class WeaponWindowTool : EditorWindow
             {
                 if (go == null) continue;
                 if (!calibrationStatus.ContainsKey(go) || !calibrationStatus[go]) continue;
-
                 if (i > 0 && equipLoadout[0] != null)
                 {
                     if (bodyDataMap.TryGetValue(equipLoadout[0], out var bd) &&
@@ -1784,32 +1575,21 @@ public class WeaponWindowTool : EditorWindow
                 }
                 validAssets.Add(go);
             }
-
-            if (validAssets.Count > 0)
-            {
-                equipLoadout[i] = validAssets[Random.Range(0, validAssets.Count)];
-                if (i == 0) hasValidBody = true;
-            }
-            else
-            {
-                equipLoadout[i] = null;
-            }
+            if (validAssets.Count > 0) { equipLoadout[i] = validAssets[Random.Range(0, validAssets.Count)]; if (i == 0) hasValidBody = true; }
+            else equipLoadout[i] = null;
         }
 
         if (!hasValidBody)
         {
-            EditorUtility.DisplayDialog("Notice",
-                "Missing a calibrated Receiver in your library. Cannot randomize!", "OK");
+            EditorUtility.DisplayDialog("Notice", "Missing a calibrated Receiver in your library. Cannot randomize!", "OK");
             return;
         }
-
         RefreshEquipAssembly(silentClear: true);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Save / load
     // ─────────────────────────────────────────────────────────────────────────
-
 
     private void SaveEquipAssembly()
     {
@@ -1821,7 +1601,6 @@ public class WeaponWindowTool : EditorWindow
         string path = EditorUtility.SaveFilePanelInProject("Save Full Weapon", "NewWeaponLoadout", "prefab", "Select save path");
         if (string.IsNullOrEmpty(path)) return;
 
-        // INSERT: bake the data contract onto the prefab before saving 
         var runtimeData = equipAssemblyRoot.GetComponent<GunAssemblyTool.GunRuntimeData>();
         if (runtimeData == null)
             runtimeData = equipAssemblyRoot.AddComponent<GunAssemblyTool.GunRuntimeData>();
@@ -1835,11 +1614,9 @@ public class WeaponWindowTool : EditorWindow
         bodyDataMap.TryGetValue(equipLoadout[0], out runtimeData.body);   // [0] = receiver/body
 
         runtimeData.attachments.Clear();
-        for (int i = 1; i < equipLoadout.Length; i++)                     // [1..] = attachments
-            if (equipLoadout[i] != null &&
-                attachDataMap.TryGetValue(equipLoadout[i], out var attachData))
+        for (int i = 1; i < equipLoadout.Length; i++)
+            if (equipLoadout[i] != null && attachDataMap.TryGetValue(equipLoadout[i], out var attachData))
                 runtimeData.attachments.Add(attachData);
-        // END INSERT 
 
         GameObject saved = PrefabUtility.SaveAsPrefabAssetAndConnect(equipAssemblyRoot, path, InteractionMode.UserAction);
         EnsureColliders(saved);
@@ -1865,7 +1642,6 @@ public class WeaponWindowTool : EditorWindow
         foreach (var d in currentDummies) if (d != null) DestroyImmediate(d);
         currentDummies.Clear(); dummyToSocketMap.Clear();
         currentTargetObject = null; currentPrefabAsset = null;
-
         if (equipAssemblyRoot != null) DestroyImmediate(equipAssemblyRoot);
         for (int i = 0; i < equipLoadout.Length; i++) equipLoadout[i] = null;
         currentMode = WorkbenchMode.Idle;
@@ -1875,29 +1651,25 @@ public class WeaponWindowTool : EditorWindow
     {
         for (int i = 0; i < assetLibrary.Length; i++)
         {
-            var guids = assetLibrary[i]
-                .Where(go => go != null)
+            var guids = assetLibrary[i].Where(go => go != null)
                 .Select(go => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(go)));
             EditorPrefs.SetString("WT_AssetLib_Tab_" + i, string.Join(",", guids));
         }
 
         var calibrated = calibrationStatus
             .Where(kvp => kvp.Key != null && kvp.Value)
-            .Select(kvp => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Key)));
+            .Select(kvp => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Key)))
+            .Where(g => !string.IsNullOrEmpty(g));
         EditorPrefs.SetString("WT_AssetLib_Calibrated", string.Join(",", calibrated));
 
-        var bodyMap = bodyDataMap
-            .Where(kvp => kvp.Key != null && kvp.Value != null)
-            .Select(kvp =>
-                AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Key)) + ":" +
-                AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Value)));
+        var bodyMap = bodyDataMap.Where(kvp => kvp.Key != null && kvp.Value != null)
+            .Select(kvp => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Key)) + ":" +
+                           AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Value)));
         EditorPrefs.SetString("WT_BodyDataMap", string.Join(",", bodyMap));
 
-        var attMap = attachDataMap
-            .Where(kvp => kvp.Key != null && kvp.Value != null)
-            .Select(kvp =>
-                AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Key)) + ":" +
-                AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Value)));
+        var attMap = attachDataMap.Where(kvp => kvp.Key != null && kvp.Value != null)
+            .Select(kvp => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Key)) + ":" +
+                           AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(kvp.Value)));
         EditorPrefs.SetString("WT_AttachDataMap", string.Join(",", attMap));
 
         SaveDataGuidMap();
@@ -1943,7 +1715,15 @@ public class WeaponWindowTool : EditorWindow
                 var go = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid));
                 if (go == null) continue;
                 assetLibrary[i].Add(go);
-                calibrationStatus[go] = calibratedSet.Contains(guid) || CheckIfCalibrated(go, i);
+
+                if (i == 0)
+                    // Receiver: GUID persisted OR geometry check (has all 4 sockets)
+                    calibrationStatus[go] = calibratedSet.Contains(guid) || CheckIfReceiverCalibrated(go);
+                else
+                    // Attachment: GUID persisted = ready. That's all.
+                    // If GUID not in set (e.g. first load after old data), default true —
+                    // attachments that were already in the library are treated as ready.
+                    calibrationStatus[go] = true;
             }
         }
 
@@ -1979,11 +1759,11 @@ public class WeaponWindowTool : EditorWindow
     private void OnSceneGUI(SceneView sv)
     {
         if (currentMode != WorkbenchMode.Calibration || currentTargetObject == null || !showCalibrationAssist) return;
-
         if (selectedTab == 0)
         {
             foreach (var dummy in currentDummies)
-                if (dummy != null) DrawSocketVisual(dummy.transform.position, dummy.transform.rotation, dummy.name.Replace("[Dummy] ", ""));
+                if (dummy != null) DrawSocketVisual(dummy.transform.position, dummy.transform.rotation,
+                    dummy.name.Replace("[Dummy] ", ""));
         }
         else if (currentDummies.Count > 0 && currentDummies[0] != null)
         {
@@ -2025,7 +1805,6 @@ public class WeaponWindowTool : EditorWindow
     private void LoadOrCreateSharedData()
     {
         EnsureDataFolders();
-
         string tagsPath = $"{TAGS_PATH}/TagDefinitions.asset";
         _tagDefs = AssetDatabase.LoadAssetAtPath<TagDefinitions>(tagsPath);
         if (_tagDefs == null)
@@ -2034,7 +1813,6 @@ public class WeaponWindowTool : EditorWindow
             AssetDatabase.CreateAsset(_tagDefs, tagsPath);
             AssetDatabase.SaveAssets();
         }
-
         string regPath = $"{REGISTRY_PATH}/AttachmentRegistry.asset";
         _registry = AssetDatabase.LoadAssetAtPath<AttachmentRegistry>(regPath);
         if (_registry == null)
@@ -2070,7 +1848,6 @@ public class WeaponWindowTool : EditorWindow
     public bool RemoveEntryByPrefabGuid(string prefabGuid)
     {
         GameObject match = null;
-
         for (int tab = 0; tab < assetLibrary.Length; tab++)
         {
             foreach (var go in assetLibrary[tab])
@@ -2081,9 +1858,7 @@ public class WeaponWindowTool : EditorWindow
             }
             if (match != null) break;
         }
-
         if (match == null) return false;
-
         for (int i = 0; i < assetLibrary.Length; i++) assetLibrary[i].Remove(match);
         calibrationStatus.Remove(match);
         bodyDataMap.Remove(match);
