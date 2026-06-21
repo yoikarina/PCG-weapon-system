@@ -12,9 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4584cdeec6a8884ca05d65e5b2a1bfe, type: 3}
   m_Name: AttachmentRegistry
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.AttachmentRegistry
-  allAttachments:   
-  - {fileID: 11400000, guid: 174acf63b8793d645acb3294f00dacb0, type: 2}
-  - {fileID: 11400000, guid: 1173b2f51ab7ef4439812a8890dacac0, type: 2}
-  - {fileID: 11400000, guid: be3aba3a7e676664fb79345e174580d6, type: 2}
-  - {fileID: 11400000, guid: eed61ca81c7196647abc29f5766af5ea, type: 2}
-  - {fileID: 11400000, guid: 3d44003101f332447967fa9f76b30d5d, type: 2}
+  allAttachments:
+  - {fileID: 11400000, guid: 3833f63db68306446af685440ed5a173, type: 2}
+  - {fileID: 11400000, guid: 98cb92e3fdafce940aa983c3f51e8886, type: 2}
+  - {fileID: 11400000, guid: 68f3114476aa33a43a17e751efdfcafb, type: 2}
+  - {fileID: 11400000, guid: 98516a7e7e40ba04197d0d42ddf73c70, type: 2}
+  - {fileID: 11400000, guid: 4784393c7959e564588f0c86f936857a, type: 2}
+  - {fileID: 11400000, guid: c38d054014bcfc3489e539bfddb3f891, type: 2}
+  - {fileID: 11400000, guid: 26a9e5707daafc64189d7470b0caa3e7, type: 2}
+  - {fileID: 11400000, guid: 5cae5016b92a363428af9512392185e4, type: 2}
+  - {fileID: 11400000, guid: 61cc1192d8116aa43a337a67e203e6de, type: 2}
+  - {fileID: 11400000, guid: 638873b458620194bba360a8116e8081, type: 2}
+  - {fileID: 11400000, guid: bd454a2d6a1127f438f7f3c9fc801104, type: 2}
+  - {fileID: 11400000, guid: 35087639fdaf37d4ab9c114e9a7d2522, type: 2}
+  - {fileID: 11400000, guid: 63f44f778ea99f1458faa3353b95165c, type: 2}
+  - {fileID: 11400000, guid: f5b0fc6218557694d9db314ff32e7a12, type: 2}
+  - {fileID: 11400000, guid: 9076a8b3335cd964cab6805781ac47bb, type: 2}
+  - {fileID: 11400000, guid: dc28181829ee18547a9673215d9914c9, type: 2}
+  - {fileID: 11400000, guid: 67f12b014d5f3fd40b04b2f89b85fb2e, type: 2}
+  - {fileID: 11400000, guid: df87b7aa39ec88749a00e937937581c8, type: 2}
+  - {fileID: 11400000, guid: 4d853666bab8ca440851f4ea17c763f0, type: 2}
+  - {fileID: 11400000, guid: d3be622e7ccc7fa4a992391d0ba662da, type: 2}

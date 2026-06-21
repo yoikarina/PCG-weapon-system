@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32a69eaefbe3422438f55afca7988e29, type: 3}
+  m_Name: AR_N_Body
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunBodyData
+  bodyId: ar_n
+  displayName: AR_N
+  bodyPrefab: {fileID: 8757571087193942518, guid: 83240cd2d4c94fe4e97d944df0231745, type: 3}
+  partObject: {fileID: 8757571087193942518, guid: 83240cd2d4c94fe4e97d944df0231745, type: 3}
+  tags: []
+  mediaData: {fileID: 0}
+  slots:
+  - slotType: 0
+  - slotType: 1
+  - slotType: 2
+  - slotType: 3
+  - slotType: 4
+  stats: []

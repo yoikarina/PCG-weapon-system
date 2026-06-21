@@ -13324,7 +13324,6 @@ MonoBehaviour:
   bulletPrefab: {fileID: -7055469053491766213, guid: e9ab89fcb332c1c4482b93dd45d1ff80, type: 3}
   dmgCalc: {fileID: 1291885961}
   runtimeData: {fileID: 1310435197}
-  equippedParts: []
   currentAmmo: 0
   maxAmmo: 0
   sounds: []
