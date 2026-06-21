@@ -17,14 +17,14 @@ public class WeaponWindowTool : EditorWindow
     private const string TAGS_PATH = "Assets/PCG Weapon Workbench/Data/Tags";
 
     // ── Theme ─────────────────────────────────────────────────────────────────
-    private static readonly Color C_ACCENT = new Color(0.44f, 0.75f, 0.75f, 1f);
-    private static readonly Color C_ACCENT_DIM = new Color(0.18f, 0.42f, 0.42f, 1f);
-    private static readonly Color C_BG_BLOCK = new Color(0.09f, 0.13f, 0.13f, 1f);
-    private static readonly Color C_BORDER = new Color(0.44f, 0.75f, 0.75f, 0.40f);
-    private static readonly Color C_TEXT_MAIN = new Color(0.88f, 0.96f, 0.96f, 1f);
-    private static readonly Color C_TEXT_DIM = new Color(0.38f, 0.58f, 0.58f, 1f);
-    private static readonly Color C_DANGER = new Color(0.75f, 0.22f, 0.17f, 1f);
-    private static readonly Color C_SUCCESS = new Color(0.27f, 0.60f, 0.32f, 1f);
+    private static readonly Color C_ACCENT = new Color(0.53f, 0.75f, 0.82f, 1f); // #88C0D0 nord frost
+    private static readonly Color C_ACCENT_DIM = new Color(0.23f, 0.35f, 0.43f, 1f); // #3B596E dark frost
+    private static readonly Color C_BG_BLOCK = new Color(0.18f, 0.20f, 0.25f, 1f); // #2E3440 nord bg
+    private static readonly Color C_BORDER = new Color(0.53f, 0.75f, 0.82f, 0.35f);
+    private static readonly Color C_TEXT_MAIN = new Color(0.93f, 0.94f, 0.95f, 1f); // #ECEFF4
+    private static readonly Color C_TEXT_DIM = new Color(0.56f, 0.62f, 0.71f, 1f); // #8F9DB5
+    private static readonly Color C_DANGER = new Color(0.75f, 0.38f, 0.42f, 1f); // #BF616A
+    private static readonly Color C_SUCCESS = new Color(0.64f, 0.75f, 0.55f, 1f); // #A3BF8C
 
     // ── UI state ──────────────────────────────────────────────────────────────
     private int selectedTab = 0;
