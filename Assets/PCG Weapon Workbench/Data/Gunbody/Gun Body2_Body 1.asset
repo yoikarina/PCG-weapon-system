@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32a69eaefbe3422438f55afca7988e29, type: 3}
-  m_Name: Cube_Body_Body
+  m_Name: Gun Body2_Body 1
   m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GunBodyData
-  bodyId: cube_body
-  displayName: Cube_Body
-  bodyPrefab: {fileID: 7725883066137650866, guid: 6536e5788be67f342b83d60608b92c4a, type: 3}
-  partObject: {fileID: 7725883066137650866, guid: 6536e5788be67f342b83d60608b92c4a, type: 3}
+  bodyId: gun_body2
+  displayName: Gun Body2
+  bodyPrefab: {fileID: 4494728141878595394, guid: 0677a5d9aaae26042be8e27ece77dd68, type: 3}
+  partObject: {fileID: 4494728141878595394, guid: 0677a5d9aaae26042be8e27ece77dd68, type: 3}
   tags: []
   mediaData: {fileID: 0}
   slots:

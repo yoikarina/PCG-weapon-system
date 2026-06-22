@@ -59,6 +59,7 @@ public class WeaponWindowTool : EditorWindow
     // Detail panel state
     private GameObject _selectedPrefab;
     private Vector2 _detailScroll;
+    private bool _pendingExitGUI = false;
 
     // Shared data
     private TagDefinitions _tagDefs;
@@ -155,6 +156,11 @@ public class WeaponWindowTool : EditorWindow
         DrawRightPanel(safeRightWidth);
 
         GUILayout.EndHorizontal();
+        if (_pendingExitGUI)
+        {
+            _pendingExitGUI = false;
+            GUIUtility.ExitGUI();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -1016,7 +1022,10 @@ public class WeaponWindowTool : EditorWindow
                     bool wasViewing = (_selectedPrefab == menuObj && currentMode == WorkbenchMode.ViewData);
                     if (_selectedPrefab == menuObj) { _selectedPrefab = null; currentMode = WorkbenchMode.Idle; }
                     SaveLibrary(); RefreshRegistry(); AssetDatabase.Refresh();
-                    if (wasViewing) GUIUtility.ExitGUI();
+                    // ── 改动在这里：不在 GenericMenu 回调里直接调 ExitGUI ──
+                    // ExitGUI() 在回调里会被 Unity 当成未捕获异常打印到 Console。
+                    // 改用 flag，让 OnGUI() 在下一帧正常的 GUI 绘制上下文里调用它。
+                    if (wasViewing) _pendingExitGUI = true;
                 });
                 menu.ShowAsContext();
                 e.Use();
@@ -1026,15 +1035,11 @@ public class WeaponWindowTool : EditorWindow
             {
                 if (selectedTab == 0)
                 {
-                    // Receiver: must be calibrated (has sockets) before equipping
                     if (isCalibrated) EnterEquipMode(obj, selectedTab);
                     else EnterCalibrationMode(obj, selectedTab);
                 }
                 else
                 {
-                    // Attachment: never needs manual calibration.
-                    // Position on the gun is determined by the Receiver's socket transforms.
-                    // Mark ready if not already, then go straight to equip.
                     if (!isCalibrated) MarkAttachmentReady(obj, selectedTab);
                     EnterEquipMode(obj, selectedTab);
                 }
