@@ -1,4 +1,4 @@
-using GunAssemblyTool;
+ï»¿using GunAssemblyTool;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +6,7 @@ using UnityEngine.Pool;
 
 public class GunData : MonoBehaviour
 {
-    [Header("Scene References")]
+    [Header("Scene References â€” auto-found if not assigned")]
     public GameObject bulletSpawnLocation;
     public Bullet bulletPrefab;
     public DamageCalculation dmgCalc;
@@ -14,7 +14,7 @@ public class GunData : MonoBehaviour
 
     public GunRuntimeData runtimeData;
 
-    [Header("Current count ammo")]
+    [Header("Current Ammo")]
     public int currentAmmo;
     public int maxAmmo;
 
@@ -25,82 +25,141 @@ public class GunData : MonoBehaviour
     public float damage;
     public float weight;
 
-    private bool reloadNeeded = false;
-    private ObjectPool<Bullet> pool;
-    private GunInstanceData gun;
+    // â”€â”€ Private state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    private bool _initialised = false;
+    private bool _reloadNeeded = false;
+    private ObjectPool<Bullet> _pool;
+    private GunInstanceData _gun;
 
-    public void Awake()
+    // â”€â”€ Initialisation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// <summary>
+    /// Called by GunSetup (fast path) or lazily on first use.
+    /// Safe to call multiple times â€” subsequent calls are no-ops.
+    /// </summary>
+    public void Initialise()
     {
-        gun = runtimeData.GetGunData();
-        damage = gun.stats.damage;
-        weight = gun.stats.weight;
+        if (_initialised) return;
 
-        // Media sfx is optional ¡ª fall back to empty list if not provided
-        sounds = gun.media != null && gun.media.sfx != null
-               ? gun.media.sfx
+        if (runtimeData == null)
+        {
+            Debug.LogWarning($"[GunData] runtimeData not assigned on '{name}'. " +
+                             "Stats will be zeroed until it is set.");
+            return;
+        }
+
+        _gun = runtimeData.GetGunData();
+        damage = _gun.stats.damage;
+        weight = _gun.stats.weight;
+
+        sounds = _gun.media != null && _gun.media.sfx != null
+               ? _gun.media.sfx
                : new List<AudioClip>();
 
-        SetAmmo();
-        currentAmmo = gun.stats.ammoCapacity;
+        currentAmmo = _gun.stats.ammoCapacity;
         maxAmmo = currentAmmo;
-        ObjectPooling();
+
+        BuildPool();
+
+        _initialised = true;
     }
 
-    // ©¤©¤ Shooting ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+    private void Awake()
+    {
+        // Attempt early init. If runtimeData is already wired (baked by the
+        // workbench wiring pass) this succeeds immediately. If GunSetup hasn't
+        // run yet this is a no-op and Initialise() is retried on first use.
+        Initialise();
+    }
+
+    // â”€â”€ Scene-reference resolution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// <summary>
+    /// Fills any still-null scene references. Called by GunSetup and also
+    /// lazily before each shot so the gun works even without GunSetup.
+    /// </summary>
+    public void ResolveSceneRefs()
+    {
+        if (dmgCalc == null)
+            dmgCalc = Object.FindFirstObjectByType<DamageCalculation>();
+
+        if (bulletSpawnLocation == null)
+        {
+            var spawn = GameObject.Find("RifleBulletSpawn");
+            if (spawn != null) bulletSpawnLocation = spawn;
+        }
+
+        if (bulletPrefab == null)
+        {
+            var bulletGO = Resources.Load<GameObject>("Bullet_B");
+            if (bulletGO != null) bulletPrefab = bulletGO.GetComponent<Bullet>();
+        }
+
+        if (impactEffect == null)
+        {
+            var impact = GameObject.Find("Impact");
+            if (impact != null) impactEffect = impact;
+        }
+
+        // Rebuild pool if bullet prefab just became available
+        if (bulletPrefab != null && _pool == null)
+            BuildPool();
+    }
+
+    // â”€â”€ Shooting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public void ShootingTheGun(Camera playerCamera)
     {
-        int accumulatedDmg = dmgCalc != null ? dmgCalc.DamageCalc(gun) : 0;
+        // Lazy init â€” covers the case where GunSetup didn't run first
+        Initialise();
+        ResolveSceneRefs();
 
-        if (!reloadNeeded)
+        if (_gun == null) return;
+
+        int accumulatedDmg = dmgCalc != null ? dmgCalc.DamageCalc(_gun) : 0;
+
+        if (!_reloadNeeded)
         {
-            // Bullet visual is optional ¡ª only spawn if the prefab is assigned
             Bullet bullet = null;
-            if (bulletPrefab != null && pool != null)
+            if (bulletPrefab != null && _pool != null)
             {
-                bullet = pool.Get();
+                bullet = _pool.Get();
                 bullet.transform.position = bulletSpawnLocation != null
                     ? bulletSpawnLocation.transform.position
                     : transform.position;
                 bullet.transform.rotation = transform.rotation;
             }
 
-            // Raycast hit detection still runs regardless of bullet visual
             if (Physics.Raycast(playerCamera.transform.position,
                                 playerCamera.transform.forward,
                                 out RaycastHit hit,
-                                gun.stats.fireRange))
+                                _gun.stats.fireRange))
             {
                 Enemy enemy = hit.transform.GetComponent<Enemy>();
                 Prop prop = hit.transform.GetComponent<Prop>();
                 if (enemy != null) enemy.dealDamage(accumulatedDmg);
-                if (prop != null) prop.HitProp(gun.stats.fireRange, playerCamera);
+                if (prop != null) prop.HitProp(_gun.stats.fireRange, playerCamera);
 
-                // Impact VFX is optional ¡ª only spawn if assigned
                 if (impactEffect != null)
                 {
-                    GameObject shoot = Instantiate(impactEffect, hit.point,
-                                                   Quaternion.LookRotation(hit.normal));
-                    Destroy(shoot, 2f);
+                    GameObject vfx = Instantiate(impactEffect, hit.point,
+                                                 Quaternion.LookRotation(hit.normal));
+                    Destroy(vfx, 2f);
                 }
             }
 
-            // Apply bullet velocity only if a bullet was spawned
             if (bullet != null)
             {
-                float force = 400f + gun.stats.fireRate;
-                bullet.Spawn(bullet.transform.forward * force);
-                StartCoroutine(DelayedDisable(2f, bullet));
+                bullet.Spawn(bullet.transform.forward * (400f + _gun.stats.fireRate));
+                StartCoroutine(DelayedRelease(2f, bullet));
             }
 
-            // Muzzle flash particles are optional
             if (bulletSpawnLocation != null)
             {
-                var parti = bulletSpawnLocation.GetComponent<ParticleSystem>();
-                if (parti != null) parti.Play();
+                var ps = bulletSpawnLocation.GetComponent<ParticleSystem>();
+                if (ps != null) ps.Play();
             }
 
-            // Fire sound is optional
             if (audioSource != null && sounds != null && sounds.Count > 0 && sounds[0] != null)
             {
                 audioSource.clip = sounds[0];
@@ -108,70 +167,51 @@ public class GunData : MonoBehaviour
             }
         }
 
-        CurrentAmmo();
+        TickAmmo();
     }
 
-    // ©¤©¤ Ammo ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+    // â”€â”€ Ammo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    public void CurrentAmmo()
+    private void TickAmmo()
     {
-        if (reloadNeeded)
-        {
-            Reload();
-            return;
-        }
+        if (_reloadNeeded) { Reload(); return; }
         currentAmmo--;
-        if (currentAmmo == 0) reloadNeeded = true;
+        if (currentAmmo <= 0) _reloadNeeded = true;
     }
 
     public void Reload()
     {
-        reloadNeeded = true;
-
-        // Reload sound is optional (sounds[1])
+        _reloadNeeded = true;
         if (audioSource != null && sounds != null && sounds.Count > 1 && sounds[1] != null)
         {
             audioSource.clip = sounds[1];
             audioSource.Play();
         }
-
-        StartCoroutine(ReloadSpeed(2f));
-        SetAmmo();
+        StartCoroutine(ReloadDelay(2f));
     }
 
-    private IEnumerator ReloadSpeed(float time)
+    private IEnumerator ReloadDelay(float time)
     {
         yield return new WaitForSeconds(time);
-        reloadNeeded = false;
+        if (_gun != null) currentAmmo = _gun.stats.ammoCapacity;
+        _reloadNeeded = false;
     }
 
-    public void SetAmmo()
+    // â”€â”€ Object pooling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    private void BuildPool()
     {
-        if (gun != null) currentAmmo = gun.stats.ammoCapacity;
-    }
-
-    // ©¤©¤ Object pooling ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-
-    private void ObjectPooling()
-    {
-        // Only build the pool if a bullet prefab was assigned. Without it the
-        // pool would crash on first CreateItem() call.
-        if (bulletPrefab == null) return;
-
-        pool = new ObjectPool<Bullet>(
-            createFunc: CreateItem,
-            actionOnGet: OnGet,
-            actionOnRelease: OnRelease,
+        if (bulletPrefab == null || _pool != null) return;
+        _pool = new ObjectPool<Bullet>(
+            createFunc: () => Instantiate(bulletPrefab),
+            actionOnGet: b => b.gameObject.SetActive(true),
+            actionOnRelease: b => b.gameObject.SetActive(false),
             maxSize: 5);
     }
 
-    private IEnumerator DelayedDisable(float time, Bullet bullet)
+    private IEnumerator DelayedRelease(float time, Bullet bullet)
     {
         yield return new WaitForSeconds(time);
-        if (pool != null && bullet != null) pool.Release(bullet);
+        if (_pool != null && bullet != null) _pool.Release(bullet);
     }
-
-    private Bullet CreateItem() => Instantiate(bulletPrefab);
-    private void OnGet(Bullet b) => b.gameObject.SetActive(true);
-    private void OnRelease(Bullet b) => b.gameObject.SetActive(false);
 }
