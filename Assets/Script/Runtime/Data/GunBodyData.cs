@@ -52,10 +52,10 @@ namespace GunAssemblyTool
         public List<StatEntry> stats = new List<StatEntry>();
 
         // ── Runtime caches ────────────────────────────────────────────────────
-        private HashSet<string>                      _tagCache;
+        private HashSet<string> _tagCache;
         private Dictionary<AttachmentType, SlotData> _slotCache;
 
-        private void OnEnable()  => RebuildCaches();
+        private void OnEnable() => RebuildCaches();
 
         private void OnValidate()
         {
@@ -70,9 +70,18 @@ namespace GunAssemblyTool
 
         private void RebuildCaches()
         {
-            _tagCache  = new HashSet<string>(tags);
+            _tagCache = new HashSet<string>(tags);
             _slotCache = slots.Where(s => s != null)
                               .ToDictionary(s => s.slotType, s => s);
+        }
+
+        // Forces the slot and tag caches to rebuild on the next access.
+        // Call this in the Editor after modifying the slots or tags lists
+        // at runtime so that IsCompatible immediately reflects the change.
+        public void InvalidateCache()
+        {
+            _tagCache = null;
+            _slotCache = null;
         }
 
         // Returns true if this body carries the given tag. O(1).

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbbfcc6329c131479e20fc36a0cb22b, type: 3}
+  m_Name: Grip_1_Grip 2
+  m_EditorClassIdentifier: GunAssemblyTool.Runtime::GunAssemblyTool.GripData
+  attachmentId: grip_1
+  displayName: Grip_1
+  attachType: 5
+  requiredTags: []
+  forbiddenTags: []
+  mediaOverride: {fileID: 0}
+  stats: []
+  attachmentPrefab: {fileID: 8811330307621496331, guid: f9bbe5bf5a1c6184aab0e7aa14196acb, type: 3}

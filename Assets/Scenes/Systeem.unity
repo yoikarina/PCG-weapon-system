@@ -1128,6 +1128,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d10f603c7ea84af49a9d2c5fa16e1f88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIStats
+  hitPoints: {fileID: 0}
+  ammunitionCount: {fileID: 0}
+  damageText: {fileID: 0}
+  statsInfo: {fileID: 0}
+  colorCheck: {fileID: 0}
 --- !u!1 &1648049359
 GameObject:
   m_ObjectHideFlags: 0

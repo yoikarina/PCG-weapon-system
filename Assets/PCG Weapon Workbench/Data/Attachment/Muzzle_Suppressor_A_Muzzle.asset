@@ -17,6 +17,6 @@ MonoBehaviour:
   attachType: 2
   requiredTags: []
   forbiddenTags: []
-  mediaOverride: {fileID: 0}
+  mediaOverride: {fileID: 11400000, guid: 7e9a0a6e60233a14ba73d2895acc9267, type: 2}
   stats: []
   attachmentPrefab: {fileID: 1942518410016144661, guid: 89c410be0f641a943a77d60fc48ce607, type: 3}
