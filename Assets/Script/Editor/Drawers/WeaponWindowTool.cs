@@ -256,9 +256,22 @@ public class WeaponWindowTool : EditorWindow
 
         WB_LabelDim("Use the button below to retroactively assign missing tags to all loaded prefabs.");
         GUILayout.Space(4);
-        if (GUILayout.Button("⟳  Assign Missing Tags to All Loaded Prefabs", EditorStyles.miniButton))
+        if (GUILayout.Button("Assign Missing Tags to All Loaded Prefabs", EditorStyles.miniButton))
             BulkAssignMissingTags();
 
+        WB_EndBlock();
+
+        GUILayout.Space(10);
+        DrawSectionHeader("Saved Prefab Components");
+        WB_BeginBlock();
+        WB_LabelDim(
+            "Configure which components and scripts are added to every prefab " +
+            "created by Save Full Assembly.\n\n" +
+            "Rigidbody, colliders, and custom scripts can all be toggled " +
+            "in Global Settings.");
+        GUILayout.Space(4);
+        if (GUILayout.Button("Open Global Settings →", EditorStyles.miniButton))
+            WeaponToolSettingsWorkbench.ShowWindow();
         WB_EndBlock();
     }
 
@@ -1299,34 +1312,7 @@ public class WeaponWindowTool : EditorWindow
                 runtimeData.attachments.Add(ad);
 
         // ── 2. Physics — Editor can reference these types directly ────────────
-
-        // Rigidbody — keep the reference so it can be assigned to PickUpController.rb
-        var rb = equipAssemblyRoot.GetComponent<Rigidbody>()
-              ?? equipAssemblyRoot.AddComponent<Rigidbody>();
-
-        // Trigger BoxCollider — WeaponDetection pickup range + PickUpController.coll
-        BoxCollider trigger = null;
-        foreach (var c in equipAssemblyRoot.GetComponents<BoxCollider>())
-            if (c.isTrigger) { trigger = c; break; }
-        if (trigger == null)
-        {
-            trigger = equipAssemblyRoot.AddComponent<BoxCollider>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector3(1.5f, 0.5f, 1.5f);
-            trigger.center = new Vector3(0f, 0.25f, 0f);
-        }
-
-        // Solid BoxCollider — physics collision when the gun lies on the ground
-        BoxCollider solid = null;
-        foreach (var c in equipAssemblyRoot.GetComponents<BoxCollider>())
-            if (!c.isTrigger) { solid = c; break; }
-        if (solid == null)
-        {
-            solid = equipAssemblyRoot.AddComponent<BoxCollider>();
-            solid.isTrigger = false;
-            solid.size = new Vector3(0.8f, 0.2f, 0.3f);
-            solid.center = Vector3.zero;
-        }
+        InjectUserComponents(equipAssemblyRoot);
 
         // ── 3. BulletSpawnPoint — child GO placed at the muzzle tip ──────────
         Transform spawnPoint = equipAssemblyRoot.transform.Find("BulletSpawnPoint");
@@ -1441,6 +1427,68 @@ public class WeaponWindowTool : EditorWindow
 
         Debug.Log($"[WeaponWorkbench] Saved and wired: {path}");
         EditorGUIUtility.PingObject(saved);
+    }
+
+    private static Rigidbody InjectUserComponents(GameObject go)
+    {
+        // ── Rigidbody ─────────────────────────────────────────────────────────
+        Rigidbody rb = null;
+        if (WeaponToolSettingsWorkbench.addRigidbody)
+            rb = go.GetComponent<Rigidbody>() ?? go.AddComponent<Rigidbody>();
+
+        // ── Trigger BoxCollider (pickup range / WeaponDetection) ──────────────
+        if (WeaponToolSettingsWorkbench.addTriggerCollider)
+        {
+            BoxCollider trigger = null;
+            foreach (var c in go.GetComponents<BoxCollider>())
+                if (c.isTrigger) { trigger = c; break; }
+            if (trigger == null)
+            {
+                trigger = go.AddComponent<BoxCollider>();
+                trigger.isTrigger = true;
+                trigger.size = new Vector3(1.5f, 0.5f, 1.5f);
+                trigger.center = new Vector3(0f, 0.25f, 0f);
+            }
+        }
+
+        // ── Solid BoxCollider (physics when gun lies on the ground) ───────────
+        if (WeaponToolSettingsWorkbench.addSolidCollider)
+        {
+            BoxCollider solid = null;
+            foreach (var c in go.GetComponents<BoxCollider>())
+                if (!c.isTrigger) { solid = c; break; }
+            if (solid == null)
+            {
+                solid = go.AddComponent<BoxCollider>();
+                solid.isTrigger = false;
+                solid.size = new Vector3(0.8f, 0.2f, 0.3f);
+                solid.center = Vector3.zero;
+            }
+        }
+
+        // ── User scripts ──────────────────────────────────────────────────────
+        foreach (var monoScript in WeaponToolSettingsWorkbench.scriptsToAdd)
+        {
+            if (monoScript == null) continue;
+
+            System.Type type = monoScript.GetClass();
+            if (type == null)
+            {
+                Debug.LogWarning($"[WeaponWorkbench] Could not resolve type for " +
+                                 $"'{monoScript.name}' — is it compiled?");
+                continue;
+            }
+            if (!type.IsSubclassOf(typeof(Component)))
+            {
+                Debug.LogWarning($"[WeaponWorkbench] '{type.Name}' is not a " +
+                                 $"Component — skipping.");
+                continue;
+            }
+            if (go.GetComponent(type) == null)
+                go.AddComponent(type);
+        }
+
+        return rb;
     }
 
 

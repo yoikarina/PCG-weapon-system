@@ -9,22 +9,35 @@ public class WeaponToolSettingsWorkbench : EditorWindow
     public static GameObject dummyBody, dummyMuzzle, dummyScope, dummyStock, dummyMag;
 
     // ── Custom tab dummies ────────────────────────────────────────────────────
-    // Key: socketName (e.g. "Socket_Grip")  Value: dummy prefab
-    private static Dictionary<string, GameObject> _customDummies = new Dictionary<string, GameObject>();
+    private static Dictionary<string, GameObject> _customDummies
+        = new Dictionary<string, GameObject>();
 
     // ── Tag settings ──────────────────────────────────────────────────────────
     public static bool autoAssignTags = true;
     private const string PREF_AUTO_ASSIGN = "WT_AutoAssignTags";
     private const string PREF_CUSTOM_DUMMY = "WT_CustomDummy_";
 
+    // ── Prefab component injection ────────────────────────────────────────────
+    public static bool addRigidbody = true;
+    public static bool addTriggerCollider = true;
+    public static bool addSolidCollider = true;
+    public static List<MonoScript> scriptsToAdd = new List<MonoScript>();
+
+    private const string PREF_ADD_RB = "WT_AddRigidbody";
+    private const string PREF_ADD_TRIGGER_COL = "WT_AddTriggerCollider";
+    private const string PREF_ADD_SOLID_COL = "WT_AddSolidCollider";
+    private const string PREF_SCRIPTS = "WT_Scripts";
+
     // ── UI state ──────────────────────────────────────────────────────────────
-    // When set, the settings window scrolls to and highlights that socket entry.
     public static string highlightSocket = null;
     private Vector2 _scroll;
+    private bool _componentsFoldout = true;
+    private bool _scriptsFoldout = true;
 
-    // ── Theme (matches main workbench) ────────────────────────────────────────
-    private static readonly Color C_HIGHLIGHT = new Color(1f, 0.85f, 0.2f, 0.25f);  // amber tint
+    // ── Theme ─────────────────────────────────────────────────────────────────
+    private static readonly Color C_HIGHLIGHT = new Color(1f, 0.85f, 0.2f, 0.25f);
     private static readonly Color C_ACCENT = new Color(0.44f, 0.75f, 0.75f, 1f);
+    private static readonly Color C_DANGER = new Color(0.75f, 0.22f, 0.17f, 1f);
 
     // ─────────────────────────────────────────────────────────────────────────
     [MenuItem("Tools/Weapon Workbench/⚙️ Global Dummy Settings", priority = 2)]
@@ -33,8 +46,6 @@ public class WeaponToolSettingsWorkbench : EditorWindow
         GetWindow<WeaponToolSettingsWorkbench>("Global Settings").minSize = new Vector2(340, 300);
     }
 
-    // Called by WeaponWindowTool after the user adds a new tab, so the window
-    // opens focused on the new socket that needs a dummy prefab assigned.
     public static void ShowForNewTab(string socketName)
     {
         highlightSocket = socketName;
@@ -87,14 +98,12 @@ public class WeaponToolSettingsWorkbench : EditorWindow
             {
                 bool isHighlighted = (socketName == highlightSocket);
 
-                // Draw amber background for the newly added socket
                 Rect rowRect = EditorGUILayout.BeginVertical();
                 if (isHighlighted)
                     EditorGUI.DrawRect(rowRect, C_HIGHLIGHT);
 
                 GUILayout.Space(4);
 
-                // Label with a ★ marker if this is the newly added one
                 string label = isHighlighted
                     ? $"★  {socketName}  ← assign a prefab here"
                     : socketName;
@@ -121,7 +130,6 @@ public class WeaponToolSettingsWorkbench : EditorWindow
                 if (EditorGUI.EndChangeCheck())
                 {
                     SaveSettings();
-                    // Clear highlight once the user assigns a prefab
                     if (_customDummies[socketName] != null && isHighlighted)
                         highlightSocket = null;
                 }
@@ -129,7 +137,6 @@ public class WeaponToolSettingsWorkbench : EditorWindow
                 GUILayout.Space(4);
                 EditorGUILayout.EndVertical();
 
-                // Thin separator between entries
                 Rect sep = GUILayoutUtility.GetRect(0, 1);
                 EditorGUI.DrawRect(sep, new Color(0.44f, 0.75f, 0.75f, 0.3f));
             }
@@ -143,47 +150,116 @@ public class WeaponToolSettingsWorkbench : EditorWindow
             "Auto-assign tags on prefab drop", autoAssignTags);
         if (EditorGUI.EndChangeCheck()) SaveSettings();
 
+        // ── Prefab component injection ────────────────────────────────────────
+        GUILayout.Space(12);
+        Rect sepRect = GUILayoutUtility.GetRect(0, 1);
+        EditorGUI.DrawRect(sepRect, new Color(0.44f, 0.75f, 0.75f, 0.3f));
+        GUILayout.Space(6);
+
+        _componentsFoldout = EditorGUILayout.Foldout(
+            _componentsFoldout, "Saved Prefab Components", true, EditorStyles.foldoutHeader);
+
+        if (_componentsFoldout)
+        {
+            EditorGUI.indentLevel++;
+
+            EditorGUILayout.HelpBox(
+                "These components are added to every prefab created by Save Full Assembly.",
+                MessageType.None);
+            GUILayout.Space(4);
+
+            EditorGUI.BeginChangeCheck();
+            addRigidbody = EditorGUILayout.ToggleLeft("Rigidbody", addRigidbody);
+            addTriggerCollider = EditorGUILayout.ToggleLeft("BoxCollider  (trigger — pickup range)", addTriggerCollider);
+            addSolidCollider = EditorGUILayout.ToggleLeft("BoxCollider  (solid — physics)", addSolidCollider);
+            if (EditorGUI.EndChangeCheck()) SaveSettings();
+
+            GUILayout.Space(8);
+
+            // ── Script list ───────────────────────────────────────────────────
+            _scriptsFoldout = EditorGUILayout.Foldout(
+                _scriptsFoldout, "Scripts to Attach", true);
+
+            if (_scriptsFoldout)
+            {
+                EditorGUI.indentLevel++;
+
+                EditorGUILayout.HelpBox(
+                    "Drag MonoScript assets here from the Project window. " +
+                    "Each script's component is added to the prefab when saving.",
+                    MessageType.None);
+                GUILayout.Space(2);
+
+                EditorGUI.BeginChangeCheck();
+                for (int i = 0; i < scriptsToAdd.Count; i++)
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        scriptsToAdd[i] = (MonoScript)EditorGUILayout.ObjectField(
+                            $"Script {i + 1}", scriptsToAdd[i], typeof(MonoScript), false);
+
+                        GUI.backgroundColor = C_DANGER;
+                        if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
+                        {
+                            scriptsToAdd.RemoveAt(i);
+                            GUI.backgroundColor = Color.white;
+                            GUI.changed = true;
+                            break;
+                        }
+                        GUI.backgroundColor = Color.white;
+                    }
+                }
+                if (EditorGUI.EndChangeCheck()) SaveSettings();
+
+                GUILayout.Space(2);
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("+ Add Script Slot", EditorStyles.miniButton,
+                            GUILayout.Width(120)))
+                    {
+                        scriptsToAdd.Add(null);
+                        SaveSettings();
+                    }
+                }
+
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUI.indentLevel--;
+        }
+
         GUILayout.Space(10);
         EditorGUILayout.EndScrollView();
 
-        // Keep repainting while a socket is highlighted so the amber tint is visible
         if (highlightSocket != null) Repaint();
     }
 
-    // ── Public API for WeaponWindowTool ───────────────────────────────────────
+    // ── Public API ────────────────────────────────────────────────────────────
 
-    /// Returns the dummy prefab for a custom socket name, falling back to
-    /// dummyMuzzle if none has been assigned yet.
     public static GameObject GetCustomDummy(string socketName)
     {
         if (_customDummies.TryGetValue(socketName, out var prefab) && prefab != null)
             return prefab;
-        return dummyMuzzle; // fallback so calibration still works
+        return dummyMuzzle;
     }
 
-    /// Register a new custom socket. Call this when a new tab is added.
-    /// If the socket already has a saved dummy it will be restored.
     public static void RegisterCustomSocket(string socketName)
     {
         if (_customDummies.ContainsKey(socketName)) return;
-        // Try to restore a previously saved dummy for this socket
         _customDummies[socketName] = LoadPrefab(PREF_CUSTOM_DUMMY + socketName);
         SaveSettings();
     }
 
-    /// Unregister a custom socket when its tab is removed.
     public static void UnregisterCustomSocket(string socketName)
     {
         if (!_customDummies.ContainsKey(socketName)) return;
         _customDummies.Remove(socketName);
         EditorPrefs.DeleteKey(PREF_CUSTOM_DUMMY + socketName);
-        // Also remove from the saved list
         SaveCustomSocketList();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Persistence
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── Persistence ───────────────────────────────────────────────────────────
 
     public static void LoadSettings()
     {
@@ -193,18 +269,19 @@ public class WeaponToolSettingsWorkbench : EditorWindow
         dummyStock = LoadPrefab("WT_DummyStock");
         dummyMag = LoadPrefab("WT_DummyMag");
         autoAssignTags = EditorPrefs.GetBool(PREF_AUTO_ASSIGN, true);
+        addRigidbody = EditorPrefs.GetBool(PREF_ADD_RB, true);
+        addTriggerCollider = EditorPrefs.GetBool(PREF_ADD_TRIGGER_COL, true);
+        addSolidCollider = EditorPrefs.GetBool(PREF_ADD_SOLID_COL, true);
+        LoadScripts();
 
-        // Restore custom socket list
         _customDummies.Clear();
         string raw = EditorPrefs.GetString("WT_CustomSocketList", "");
         if (!string.IsNullOrEmpty(raw))
-        {
             foreach (var sn in raw.Split(','))
             {
                 if (string.IsNullOrEmpty(sn)) continue;
                 _customDummies[sn] = LoadPrefab(PREF_CUSTOM_DUMMY + sn);
             }
-        }
     }
 
     private static void SaveSettings()
@@ -215,12 +292,37 @@ public class WeaponToolSettingsWorkbench : EditorWindow
         SavePrefab("WT_DummyStock", dummyStock);
         SavePrefab("WT_DummyMag", dummyMag);
         EditorPrefs.SetBool(PREF_AUTO_ASSIGN, autoAssignTags);
-
-        // Save each custom dummy
+        EditorPrefs.SetBool(PREF_ADD_RB, addRigidbody);
+        EditorPrefs.SetBool(PREF_ADD_TRIGGER_COL, addTriggerCollider);
+        EditorPrefs.SetBool(PREF_ADD_SOLID_COL, addSolidCollider);
+        SaveScripts();
         foreach (var kv in _customDummies)
             SavePrefab(PREF_CUSTOM_DUMMY + kv.Key, kv.Value);
-
         SaveCustomSocketList();
+    }
+
+    private static void LoadScripts()
+    {
+        scriptsToAdd.Clear();
+        string raw = EditorPrefs.GetString(PREF_SCRIPTS, "");
+        if (string.IsNullOrEmpty(raw)) return;
+        foreach (var guid in raw.Split(';'))
+        {
+            if (string.IsNullOrEmpty(guid)) continue;
+            scriptsToAdd.Add(AssetDatabase.LoadAssetAtPath<MonoScript>(
+                AssetDatabase.GUIDToAssetPath(guid)));
+        }
+    }
+
+    private static void SaveScripts()
+    {
+        var guids = scriptsToAdd.Select(s =>
+        {
+            if (s == null) return "";
+            string path = AssetDatabase.GetAssetPath(s);
+            return string.IsNullOrEmpty(path) ? "" : AssetDatabase.AssetPathToGUID(path);
+        });
+        EditorPrefs.SetString(PREF_SCRIPTS, string.Join(";", guids));
     }
 
     private static void SaveCustomSocketList()
