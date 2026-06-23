@@ -1280,17 +1280,169 @@ public class WeaponWindowTool : EditorWindow
 
     private void SaveEquipAssembly()
     {
-        if (equipAssemblyRoot == null || equipLoadout[0] == null) { EditorUtility.DisplayDialog("Cannot Save", "A Receiver must be included to save.", "OK"); return; }
-        string path = EditorUtility.SaveFilePanelInProject("Save Full Weapon", "NewWeaponLoadout", "prefab", "Select save path");
+        if (equipAssemblyRoot == null || equipLoadout[0] == null)
+        {
+            EditorUtility.DisplayDialog("Cannot Save", "A Receiver must be included to save.", "OK");
+            return;
+        }
+        string path = EditorUtility.SaveFilePanelInProject(
+            "Save Full Weapon", "NewWeaponLoadout", "prefab", "Select save path");
         if (string.IsNullOrEmpty(path)) return;
-        var runtimeData = equipAssemblyRoot.GetComponent<GunAssemblyTool.GunRuntimeData>();
-        if (runtimeData == null) runtimeData = equipAssemblyRoot.AddComponent<GunAssemblyTool.GunRuntimeData>();
+
+        // ── 1. GunRuntimeData — data contract read by the minigame ───────────
+        var runtimeData = equipAssemblyRoot.GetComponent<GunAssemblyTool.GunRuntimeData>()
+                       ?? equipAssemblyRoot.AddComponent<GunAssemblyTool.GunRuntimeData>();
         bodyDataMap.TryGetValue(equipLoadout[0], out runtimeData.body);
         runtimeData.attachments.Clear();
-        for (int i = 1; i < _tabs.Count; i++) if (equipLoadout[i] != null && attachDataMap.TryGetValue(equipLoadout[i], out var ad)) runtimeData.attachments.Add(ad);
-        GameObject saved = PrefabUtility.SaveAsPrefabAssetAndConnect(equipAssemblyRoot, path, InteractionMode.UserAction);
-        if (saved != null) { Debug.Log($"[WeaponWorkbench] Saved: {path}"); EditorGUIUtility.PingObject(saved); }
+        for (int i = 1; i < _tabs.Count; i++)
+            if (equipLoadout[i] != null && attachDataMap.TryGetValue(equipLoadout[i], out var ad))
+                runtimeData.attachments.Add(ad);
+
+        // ── 2. Physics — Editor can reference these types directly ────────────
+
+        // Rigidbody — keep the reference so it can be assigned to PickUpController.rb
+        var rb = equipAssemblyRoot.GetComponent<Rigidbody>()
+              ?? equipAssemblyRoot.AddComponent<Rigidbody>();
+
+        // Trigger BoxCollider — WeaponDetection pickup range + PickUpController.coll
+        BoxCollider trigger = null;
+        foreach (var c in equipAssemblyRoot.GetComponents<BoxCollider>())
+            if (c.isTrigger) { trigger = c; break; }
+        if (trigger == null)
+        {
+            trigger = equipAssemblyRoot.AddComponent<BoxCollider>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector3(1.5f, 0.5f, 1.5f);
+            trigger.center = new Vector3(0f, 0.25f, 0f);
+        }
+
+        // Solid BoxCollider — physics collision when the gun lies on the ground
+        BoxCollider solid = null;
+        foreach (var c in equipAssemblyRoot.GetComponents<BoxCollider>())
+            if (!c.isTrigger) { solid = c; break; }
+        if (solid == null)
+        {
+            solid = equipAssemblyRoot.AddComponent<BoxCollider>();
+            solid.isTrigger = false;
+            solid.size = new Vector3(0.8f, 0.2f, 0.3f);
+            solid.center = Vector3.zero;
+        }
+
+        // ── 3. BulletSpawnPoint — child GO placed at the muzzle tip ──────────
+        Transform spawnPoint = equipAssemblyRoot.transform.Find("BulletSpawnPoint");
+        if (spawnPoint == null)
+        {
+            var spawnGO = new GameObject("BulletSpawnPoint");
+            spawnGO.transform.SetParent(equipAssemblyRoot.transform, false);
+            spawnGO.transform.localPosition = new Vector3(0f, 0f, 0.5f);
+            spawnPoint = spawnGO.transform;
+        }
+
+        // ── 4. Minigame scripts — added via reflection ───────────────────────
+        System.Type FindType(string name)
+        {
+            foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var t = asm.GetType(name);
+                if (t != null) return t;
+            }
+            Debug.LogWarning($"[WeaponWorkbench] Type '{name}' not found. " +
+                             "Make sure all minigame scripts are compiled.");
+            return null;
+        }
+
+        Component GetOrAdd(System.Type type)
+        {
+            if (type == null) return null;
+            return equipAssemblyRoot.GetComponent(type)
+                ?? equipAssemblyRoot.AddComponent(type);
+        }
+
+        GetOrAdd(FindType("GunData"));
+        GetOrAdd(FindType("PickUpController"));
+        GetOrAdd(FindType("WeaponCollection"));
+        GetOrAdd(FindType("WeaponDetection"));
+        GetOrAdd(FindType("GunSetup"));
+
+        // ── 5. Save prefab first ──────────────────────────────────────────────
+        // Save the scene GO to disk first, then reopen via LoadPrefabContents
+        // to wire cross-component references — the only reliable way to persist
+        // component refs in a prefab across asmdef boundaries.
+        GameObject saved = PrefabUtility.SaveAsPrefabAssetAndConnect(
+            equipAssemblyRoot, path, InteractionMode.UserAction);
+
+        if (saved == null)
+        {
+            Debug.LogError("[WeaponWorkbench] SaveAsPrefabAssetAndConnect failed.");
+            return;
+        }
+
+        // ── 6. Wire references on the saved prefab asset ──────────────────────
+        GameObject prefabRoot = PrefabUtility.LoadPrefabContents(path);
+
+        System.Type FindType2(string name)
+        {
+            foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var t = asm.GetType(name);
+                if (t != null) return t;
+            }
+            return null;
+        }
+
+        void SetProp(SerializedObject so, string propName, Object value)
+        {
+            var prop = so.FindProperty(propName);
+            if (prop != null) prop.objectReferenceValue = value;
+        }
+
+        var prefabRb = prefabRoot.GetComponent<Rigidbody>();
+        var prefabTrigger = System.Array.Find(
+            prefabRoot.GetComponents<BoxCollider>(), c => c.isTrigger);
+        var prefabSpawn = prefabRoot.transform.Find("BulletSpawnPoint");
+
+        var tGunData = FindType2("GunData");
+        var tPickUp = FindType2("PickUpController");
+        var tWeaponCol = FindType2("WeaponCollection");
+
+        var prefabRuntimeData = prefabRoot.GetComponent<GunAssemblyTool.GunRuntimeData>();
+        var prefabGunData = tGunData != null ? prefabRoot.GetComponent(tGunData) : null;
+        var prefabPickUp = tPickUp != null ? prefabRoot.GetComponent(tPickUp) : null;
+        var prefabWeaponCol = tWeaponCol != null ? prefabRoot.GetComponent(tWeaponCol) : null;
+
+        if (prefabGunData != null)
+        {
+            var so = new SerializedObject(prefabGunData);
+            SetProp(so, "runtimeData", prefabRuntimeData);
+            SetProp(so, "bulletSpawnLocation", prefabSpawn != null ? prefabSpawn.gameObject : null);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        if (prefabPickUp != null)
+        {
+            var so = new SerializedObject(prefabPickUp);
+            SetProp(so, "gun", prefabGunData);
+            SetProp(so, "rb", prefabRb);
+            SetProp(so, "coll", prefabTrigger);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        if (prefabWeaponCol != null)
+        {
+            var so = new SerializedObject(prefabWeaponCol);
+            SetProp(so, "gunData", prefabGunData);
+            SetProp(so, "pickUpController", prefabPickUp);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        // Write back to disk and unload the prefab editing context
+        PrefabUtility.SaveAsPrefabAsset(prefabRoot, path);
+        PrefabUtility.UnloadPrefabContents(prefabRoot);
+
+        Debug.Log($"[WeaponWorkbench] Saved and wired: {path}");
+        EditorGUIUtility.PingObject(saved);
     }
+
 
     private void ClearWorkbench()
     {

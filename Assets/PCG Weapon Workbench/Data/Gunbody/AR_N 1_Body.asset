@@ -25,4 +25,9 @@ MonoBehaviour:
   - slotType: 3
   - slotType: 4
   - slotType: 5
-  stats: []
+  stats:
+  - key: Damage
+    valueType: 1
+    floatValue: 0
+    intValue: 20
+    boolValue: 0

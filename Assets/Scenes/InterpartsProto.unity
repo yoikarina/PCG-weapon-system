@@ -6774,7 +6774,7 @@ GameObject:
   - component: {fileID: 1046965134}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13323,6 +13323,7 @@ MonoBehaviour:
   bulletSpawnLocation: {fileID: 1182771594}
   bulletPrefab: {fileID: -7055469053491766213, guid: e9ab89fcb332c1c4482b93dd45d1ff80, type: 3}
   dmgCalc: {fileID: 1291885961}
+  impactEffect: {fileID: 1527918098}
   runtimeData: {fileID: 1310435197}
   currentAmmo: 0
   maxAmmo: 0
@@ -13330,7 +13331,6 @@ MonoBehaviour:
   audioSource: {fileID: 198007099}
   damage: 0
   weight: 0
-  impactEffect: {fileID: 1527918098}
 --- !u!114 &1310435197 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4693655605595792326, guid: f88ad9a78b77dd14689871f96c4dfb25, type: 3}
@@ -14788,7 +14788,7 @@ GameObject:
   - component: {fileID: 1570273226}
   m_Layer: 0
   m_Name: WeaponContainer
-  m_TagString: Untagged
+  m_TagString: WeaponContainer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15636,7 +15636,7 @@ GameObject:
   - component: {fileID: 1732268229}
   m_Layer: 0
   m_Name: Main Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

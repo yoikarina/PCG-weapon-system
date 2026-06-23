@@ -18,5 +18,10 @@ MonoBehaviour:
   requiredTags: []
   forbiddenTags: []
   mediaOverride: {fileID: 0}
-  stats: []
+  stats:
+  - key: FireRange
+    valueType: 0
+    floatValue: 20
+    intValue: 20
+    boolValue: 0
   attachmentPrefab: {fileID: 677902616199222533, guid: 8db7b927758be7a4c8c5f150125d1204, type: 3}
